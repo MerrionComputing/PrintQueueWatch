@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 11
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PrinterQueueWatch", "PrinterQueueWatch.vbproj", "{2B902455-F952-40FC-833B-1AE0B3C1756D}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccLocalPath0 = .
+		SccLocalPath1 = .
+		SccNumberOfProjects = 2
+		SccProjectUniqueName1 = PrinterQueueWatch.vbproj
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B902455-F952-40FC-833B-1AE0B3C1756D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B902455-F952-40FC-833B-1AE0B3C1756D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B902455-F952-40FC-833B-1AE0B3C1756D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B902455-F952-40FC-833B-1AE0B3C1756D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
