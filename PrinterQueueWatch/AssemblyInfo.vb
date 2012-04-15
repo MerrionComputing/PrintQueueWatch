@@ -33,7 +33,6 @@ Imports System.Runtime.InteropServices
 '\\      All windows allowed (This means that this control could be spoofed, but this is not an issue)
 '\\
 '\\ Assembly cannot be used by COM clients
-<Assembly: Security.Permissions.UIPermission(Security.Permissions.SecurityAction.RequestMinimum, Window:=Security.Permissions.UIPermissionWindow.AllWindows)> 
 <Assembly: ComVisible(False)> 
 
 

@@ -32,7 +32,7 @@ Public Class PrinterInformation
 
 #Region "Private member variables"
 
-    Private mhPrinter As IntPtr
+    Private mhPrinter As Int32
 
     '\\ PRINTER_INFO_ structures
     Private mPrinter_Info_2 As New PRINTER_INFO_2
@@ -1314,7 +1314,7 @@ Public Class PrinterInformation
         '\\ Do not attempt to pause and already paused printer
         If Not Paused Then
             Try
-                If Not SetPrinter(mhPrinter, 0, IntPtr.Zero, PrinterControlCommands.PRINTER_CONTROL_PAUSE) Then
+                If Not SetPrinter(mhPrinter, 0, 0, PrinterControlCommands.PRINTER_CONTROL_PAUSE) Then
                     Throw New Win32Exception()
                 End If
             Catch e As Win32Exception
@@ -1350,7 +1350,7 @@ Public Class PrinterInformation
         '\\ Do not attempt to resume if the printer is not paused
         If Paused Then
             Try
-                If Not SetPrinter(mhPrinter, 0, IntPtr.Zero, PrinterControlCommands.PRINTER_CONTROL_RESUME) Then
+                If Not SetPrinter(mhPrinter, 0, 0, PrinterControlCommands.PRINTER_CONTROL_RESUME) Then
                     Throw New Win32Exception()
                 End If
             Catch e As Win32Exception
@@ -1416,7 +1416,7 @@ Public Class PrinterInformation
     ''' </history>
     ''' -----------------------------------------------------------------------------
     <Diagnostics.MonitoringDescription("Sets whether or not events occuring on this printer are raised by the component")> _
-        Public Property Monitored() As Boolean
+    Public Property Monitored() As Boolean
         Get
             If Not _NotificationThread Is Nothing Then
                 Return _Monitored
@@ -1809,7 +1809,7 @@ Public Class PrinterInformation
 #Region "Private methods"
     Private Sub RefreshPrinterInformation(ByVal level As PrinterInfoLevels)
 
-        If mhPrinter.Equals(IntPtr.Zero) Then
+        If mhPrinter.Equals(0) Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine("RefreshPrinterInformation failed: Handle is invalid", Me.GetType.ToString)
             End If
@@ -1902,7 +1902,7 @@ Public Class PrinterInformation
         End If
     End Sub
 
-    Friend Sub New(ByVal PrinterHandle As IntPtr)
+    Friend Sub New(ByVal PrinterHandle As Int32)
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & PrinterHandle.ToString & ")", Me.GetType.ToString)
         End If
@@ -1951,13 +1951,13 @@ Public Class PrinterInformation
     Public Sub New(ByVal DeviceName As String, ByVal DesiredAccess As SpoolerApiConstantEnumerations.PrinterAccessRights, ByVal GetSecurityInfo As Boolean, ByVal GetJobs As Boolean)
         Dim hPrinter As Integer = 0
         If OpenPrinter(DeviceName, hPrinter, New PRINTER_DEFAULTS(DesiredAccess)) Then
-            mhPrinter = New IntPtr(hPrinter)
+            mhPrinter = hPrinter
             Call InitPrinterInfo(GetJobs)
         ElseIf OpenPrinter(DeviceName, hPrinter, New PRINTER_DEFAULTS(PrinterAccessRights.PRINTER_ALL_ACCESS)) Then
-            mhPrinter = New IntPtr(hPrinter)
+            mhPrinter = hPrinter
             Call InitPrinterInfo(GetJobs)
         ElseIf OpenPrinter(DeviceName, hPrinter, 0) Then
-            mhPrinter = New IntPtr(hPrinter)
+            mhPrinter = hPrinter
             Call InitPrinterInfo(GetJobs)
         Else
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
@@ -2082,12 +2082,12 @@ Public Class PrinterInformationCollection
     Public Sub New()
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrinters As IntPtr
+        Dim pPrinters As Int32
         Dim pcbProvided As Int32 = 0
 
         If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, String.Empty, 1, pPrinters, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pPrinters = Marshal.AllocHGlobal(pcbNeeded)
+                pPrinters = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, String.Empty, 1, pPrinters, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -2097,21 +2097,21 @@ Public Class PrinterInformationCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As IntPtr = pPrinters
+            Dim ptNext As Int32 = pPrinters
             While pcReturned > 0
                 Dim pi1 As New PRINTER_INFO_1
-                Marshal.PtrToStructure(ptNext, pi1)
+                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
                 If Not pi1.pName Is Nothing Then
                     Me.Add(New PrinterInformation(pi1.pName, PrinterAccessRights.PRINTER_ACCESS_USE, False)) ', pi2.pLocation, pi2.pComment, pi2.pServerName, 1))
                 End If
-                ptNext = New IntPtr(ptNext.ToInt32 + Marshal.SizeOf(GetType(PRINTER_INFO_1)))
+                ptNext = ptNext + Marshal.SizeOf(GetType(PRINTER_INFO_1))
                 pcReturned -= 1
             End While
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrinters.ToInt32 > 0 Then
-            Marshal.FreeHGlobal(pPrinters)
+        If pPrinters > 0 Then
+            Marshal.FreeHGlobal(CType(pPrinters, IntPtr))
         End If
 
     End Sub
@@ -2130,12 +2130,12 @@ Public Class PrinterInformationCollection
     Public Sub New(ByVal Servername As String)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrinters As IntPtr
+        Dim pPrinters As Int32
         Dim pcbProvided As Int32 = 0
 
         If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, Servername, 1, pPrinters, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pPrinters = Marshal.AllocHGlobal(pcbNeeded)
+                pPrinters = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, Servername, 1, pPrinters, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -2145,19 +2145,19 @@ Public Class PrinterInformationCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As IntPtr = pPrinters
+            Dim ptNext As Int32 = pPrinters
             While pcReturned > 0
                 Dim pi2 As New PRINTER_INFO_2
-                Marshal.PtrToStructure(ptNext, pi2)
+                Marshal.PtrToStructure(New IntPtr(ptNext), pi2)
                 Me.Add(New PrinterInformation(pi2.pPrinterName, pi2.pLocation, pi2.pComment, pi2.pServerName, 1))
-                ptNext = New IntPtr(ptNext.ToInt32 + Marshal.SizeOf(pi2) - Marshal.SizeOf(GetType(IntPtr)))
+                ptNext = ptNext + Marshal.SizeOf(pi2) - Marshal.SizeOf(GetType(Int32))
                 pcReturned -= 1
             End While
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrinters.ToInt32 > 0 Then
-            Marshal.FreeHGlobal(pPrinters)
+        If pPrinters > 0 Then
+            Marshal.FreeHGlobal(CType(pPrinters, IntPtr))
         End If
 
     End Sub

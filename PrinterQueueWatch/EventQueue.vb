@@ -12,7 +12,7 @@ Friend Class EventQueue
 
 #Region "PrinterEventQueue class"
     Private Class PrinterEventQueue
-        Inherits Queue
+        Inherits Collections.Concurrent.ConcurrentQueue(Of EventArgs)
 
         Public Overloads Function Contains(ByVal JobEventArgs As PrintJobEventArgs) As Boolean
 
@@ -23,23 +23,21 @@ Friend Class EventQueue
 
             '\\ Because an EventQueue pertains to only one printer we can compare on job id and event type
             Dim oItem As Object
-            SyncLock MyBase.SyncRoot
-                Try
-                    For Each oItem In Synchronized(Me)
-                        If TypeOf oItem Is PrintJobEventArgs Then
-                            With DirectCast(oItem, PrintJobEventArgs)
-                                If JobEventArgs.EventType = .EventType AndAlso JobEventArgs.PrintJob.JobId = .PrintJob.JobId AndAlso JobEventArgs.PrintJob.QueuedTime = .PrintJob.QueuedTime Then
-                                    Return True
-                                    Exit Function
-                                End If
-                            End With
-                        End If
-                    Next
-                Catch es As Exception
-                    Return False
-                    Exit Function
-                End Try
-            End SyncLock
+            Try
+                For Each oItem In Me
+                    If TypeOf oItem Is PrintJobEventArgs Then
+                        With DirectCast(oItem, PrintJobEventArgs)
+                            If JobEventArgs.EventType = .EventType AndAlso JobEventArgs.PrintJob.JobId = .PrintJob.JobId AndAlso JobEventArgs.PrintJob.QueuedTime = .PrintJob.QueuedTime Then
+                                Return True
+                                Exit Function
+                            End If
+                        End With
+                    End If
+                Next
+            Catch es As Exception
+                Return False
+                Exit Function
+            End Try
         End Function
 
     End Class
@@ -56,7 +54,6 @@ Friend Class EventQueue
     Private _WaitHandle As AutoResetEvent
     Private Shared _Cancelled As Boolean
 
-    Private _queueMutex As New Mutex()
 
 #End Region
 
@@ -74,9 +71,7 @@ Friend Class EventQueue
                     Call .Refresh()
                 End If
             End With
-            _queueMutex.WaitOne()
-            Queue.Synchronized(_EventQueue).Enqueue(JobEventArgs)
-            _queueMutex.ReleaseMutex()
+            _EventQueue.Enqueue(JobEventArgs)
         End If
     End Sub
 #End Region
@@ -86,9 +81,7 @@ Friend Class EventQueue
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("Printer event enqueued", Me.GetType.ToString)
         End If
-        _queueMutex.WaitOne()
-        Queue.Synchronized(_EventQueue).Enqueue(PrinterEventArgs)
-        _queueMutex.ReleaseMutex()
+        _EventQueue.Enqueue(PrinterEventArgs)
     End Sub
 #End Region
 
@@ -101,9 +94,7 @@ Friend Class EventQueue
             Trace.WriteLine("Event queue awakened - " & _EventQueue.Count.ToString & " events ", Me.GetType.ToString)
         End If
         If Not _WaitHandle Is Nothing AndAlso EventsPending Then
-            _queueMutex.WaitOne()
             _WaitHandle.Set()
-            _queueMutex.ReleaseMutex()
         End If
     End Sub
 #End Region
@@ -117,9 +108,7 @@ Friend Class EventQueue
     ''' <remarks></remarks>
     Public ReadOnly Property EventsPending() As Boolean
         Get
-            _queueMutex.WaitOne()
-            Dim eventsPendingProcessing As Boolean = (Queue.Synchronized(_EventQueue).Count > 0)
-            _queueMutex.ReleaseMutex()
+            Dim eventsPendingProcessing As Boolean = (_EventQueue.Count > 0)
             Return eventsPendingProcessing
         End Get
     End Property
@@ -174,40 +163,28 @@ Friend Class EventQueue
     End Sub
 
     Private Sub ProcessQueue()
-        Dim oEvent As Object
+        Dim oEvent As EventArgs = Nothing
         Dim ar As IAsyncResult
 
         _WaitHandle.Reset()
-        Dim _PendingEventQueue As Queue
+        
 
-        Try
-            _PendingEventQueue = New Queue(Queue.Synchronized(_EventQueue))
-        Catch ex As Exception
-            If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
-                Trace.WriteLine("Printer event queue synchronisation failure", Me.GetType.ToString)
-            End If
-            Exit Sub
-        End Try
-
-        _queueMutex.WaitOne()
-        While _PendingEventQueue.Count > 0
-            oEvent = _PendingEventQueue.Dequeue
-            If Not oEvent Is Nothing Then
-                Queue.Synchronized(_EventQueue).Dequeue()
-            End If
-            If TypeOf (oEvent) Is PrintJobEventArgs Then
-                If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
-                    Trace.WriteLine("Job event dequeued : " & DirectCast(oEvent, PrintJobEventArgs).EventType.ToString, Me.GetType.ToString)
+        While _EventQueue.Count > 0
+            If _EventQueue.TryDequeue(oEvent) Then
+                If TypeOf (oEvent) Is PrintJobEventArgs Then
+                    If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                        Trace.WriteLine("Job event dequeued : " & DirectCast(oEvent, PrintJobEventArgs).EventType.ToString, Me.GetType.ToString)
+                    End If
+                    ar = _JobEvent.BeginInvoke(DirectCast(oEvent, PrintJobEventArgs), AddressOf OnEndInvokeJobEvent, Nothing)
+                ElseIf TypeOf (oEvent) Is PrinterEventArgs Then
+                    If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                        Trace.WriteLine("Printer event dequeued", Me.GetType.ToString)
+                    End If
+                    ar = _PrinterEvent.BeginInvoke(DirectCast(oEvent, PrinterEventArgs), AddressOf OnEndInvokePrinterEvetnt, Nothing)
                 End If
-                ar = _JobEvent.BeginInvoke(DirectCast(oEvent, PrintJobEventArgs), AddressOf OnEndInvokeJobEvent, Nothing)
-            ElseIf TypeOf (oEvent) Is PrinterEventArgs Then
-                If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
-                    Trace.WriteLine("Printer event dequeued", Me.GetType.ToString)
-                End If
-                ar = _PrinterEvent.BeginInvoke(DirectCast(oEvent, PrinterEventArgs), AddressOf OnEndInvokePrinterEvetnt, Nothing)
             End If
         End While
-        _queueMutex.ReleaseMutex()
+
         '\\ If events have arrived since we started dequeueing them then triger the wait handle again to deal with them
         If EventsPending Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
@@ -283,10 +260,6 @@ Friend Class EventQueue
         _EventQueueWorker = Nothing
         _JobEvent = Nothing
         _PrinterEvent = Nothing
-        If Not _queueMutex Is Nothing Then
-            _queueMutex.Close()
-        End If
-        _queueMutex = Nothing
     End Sub
 
 #End Region

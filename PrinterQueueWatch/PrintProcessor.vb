@@ -187,14 +187,14 @@ Public Class PrintProcessorCollection
     Public Sub New()
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrintProcessors As IntPtr
+        Dim pPrintProcessors As Int32
         Dim pcbProvided As Int32 = 0
 
 
         If Not EnumPrintProcessors(String.Empty, String.Empty, 1, pPrintProcessors, 0, pcbNeeded, pcReturned) Then
             '\\ Allocate the required buffer to get all the monitors into...
             If pcbNeeded > 0 Then
-                pPrintProcessors = Marshal.AllocHGlobal(pcbNeeded)
+                pPrintProcessors = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 pcbProvided = pcbNeeded
                 If Not EnumPrintProcessors(String.Empty, String.Empty, 1, pPrintProcessors, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -204,19 +204,19 @@ Public Class PrintProcessorCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As IntPtr = pPrintProcessors
+            Dim ptNext As Int32 = pPrintProcessors
             While pcReturned > 0
                 Dim pi1 As New PRINTPROCESSOR_INFO_1
-                Marshal.PtrToStructure(ptNext, pi1)
+                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
                 Me.Add(New PrintProcessor("", pi1.pName))
-                ptNext = New IntPtr(ptNext.ToInt32 + Marshal.SizeOf(pi1))
+                ptNext = ptNext + Marshal.SizeOf(pi1)
                 pcReturned -= 1
             End While
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrintProcessors.ToInt32 > 0 Then
-            Marshal.FreeHGlobal(pPrintProcessors)
+        If pPrintProcessors > 0 Then
+            Marshal.FreeHGlobal(CType(pPrintProcessors, IntPtr))
         End If
 
 
@@ -236,13 +236,13 @@ Public Class PrintProcessorCollection
     Public Sub New(ByVal Servername As String)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrintProcessors As IntPtr
+        Dim pPrintProcessors As Int32
         Dim pcbProvided As Int32
 
-        If Not EnumPrintProcessors(Servername, String.Empty, 1, IntPtr.Zero, 0, pcbNeeded, pcReturned) Then
+        If Not EnumPrintProcessors(Servername, String.Empty, 1, 0, 0, pcbNeeded, pcReturned) Then
             '\\ Allocate the required buffer to get all the monitors into...
             If pcbNeeded > 0 Then
-                pPrintProcessors = Marshal.AllocHGlobal(pcbNeeded)
+                pPrintProcessors = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 pcbProvided = pcbNeeded
                 If Not EnumPrintProcessors(Servername, String.Empty, 2, pPrintProcessors, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -252,19 +252,19 @@ Public Class PrintProcessorCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As IntPtr = pPrintProcessors
+            Dim ptNext As Int32 = pPrintProcessors
             While pcReturned > 0
                 Dim pi1 As New PRINTPROCESSOR_INFO_1
-                Marshal.PtrToStructure(ptNext, pi1)
+                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
                 Me.Add(New PrintProcessor("", pi1.pName))
-                ptNext = New IntPtr(ptNext.ToInt32 + Marshal.SizeOf(pi1))
+                ptNext = ptNext + Marshal.SizeOf(pi1)
                 pcReturned -= 1
             End While
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrintProcessors.ToInt32 > 0 Then
-            Marshal.FreeHGlobal(pPrintProcessors)
+        If pPrintProcessors > 0 Then
+            Marshal.FreeHGlobal(CType(pPrintProcessors, IntPtr))
         End If
     End Sub
 #End Region

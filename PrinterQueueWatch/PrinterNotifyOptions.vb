@@ -17,13 +17,13 @@ Public Class PrinterNotifyOptionsType
     Public dwJobReserved1 As Int32
     Public dwJobReserved2 As Int32
     Public JobFieldCount As Int32
-    Public pJobFields As IntPtr
+    Public pJobFields As Int32
     Public wPrinterType As Int16
     Public wPrinterReserved0 As Int16
     Public dwPrinterReserved1 As Int32
     Public dwPrinterReserved2 As Int32
     Public PrinterFieldCount As Int32
-    Public pPrinterFields As IntPtr
+    Public pPrinterFields As Int32
 
 #Region "Public Enumerated Types"
 
@@ -41,11 +41,11 @@ Public Class PrinterNotifyOptionsType
         wPrinterType = CShort(Printer_Notification_Types.PRINTER_NOTIFY_TYPE)
 
         '\\ Free up the global memory
-        If pJobFields.ToInt32 <> 0 Then
-            Marshal.FreeHGlobal(pJobFields)
+        If pJobFields <> 0 Then
+            Marshal.FreeHGlobal(CType(pJobFields, IntPtr))
         End If
-        If pPrinterFields.ToInt32 <> 0 Then
-            Marshal.FreeHGlobal(pPrinterFields)
+        If pPrinterFields <> 0 Then
+            Marshal.FreeHGlobal(CType(pPrinterFields, IntPtr))
         End If
 
         If MinimumJobInfoRequired Then
@@ -54,7 +54,7 @@ Public Class PrinterNotifyOptionsType
             JobFieldCount = JOB_FIELDS_COUNT
         End If
 
-        pJobFields = Marshal.AllocHGlobal((JOB_FIELDS_COUNT * 2) - 1)
+        pJobFields = CInt(Marshal.AllocHGlobal((JOB_FIELDS_COUNT * 2) - 1))
         Dim PrintJobFields(JOB_FIELDS_COUNT - 1) As Short
 
         PrintJobFields(0) = Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_DOCUMENT
@@ -83,7 +83,7 @@ Public Class PrinterNotifyOptionsType
             PrintJobFields(22) = Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_TOTAL_BYTES
             PrintJobFields(23) = Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_BYTES_PRINTED
         End If
-        Marshal.Copy(PrintJobFields, 0, pJobFields, PrintJobFields.GetLength(0))
+        Marshal.Copy(PrintJobFields, 0, New IntPtr(pJobFields), PrintJobFields.GetLength(0))
 
         '\\ Request less printer notification details for economy sake...
         If MinimumJobInfoRequired Then
@@ -92,7 +92,7 @@ Public Class PrinterNotifyOptionsType
             PrinterFieldCount = PRINTER_FIELDS_COUNT
         End If
 
-        pPrinterFields = Marshal.AllocHGlobal((PRINTER_FIELDS_COUNT - 1) * 2)
+        pPrinterFields = CInt(Marshal.AllocHGlobal((PRINTER_FIELDS_COUNT - 1) * 2))
         Dim PrinterFields(PRINTER_FIELDS_COUNT - 1) As Short
         PrinterFields(0) = Printer_Notify_Field_Indexes.PRINTER_NOTIFY_FIELD_STATUS
 
@@ -105,7 +105,7 @@ Public Class PrinterNotifyOptionsType
             PrinterFields(6) = Printer_Notify_Field_Indexes.PRINTER_NOTIFY_FIELD_SECURITY_DESCRIPTOR
             PrinterFields(7) = Printer_Notify_Field_Indexes.PRINTER_NOTIFY_FIELD_SEPFILE
         End If
-        Marshal.Copy(PrinterFields, 0, pPrinterFields, PrinterFields.GetLength(0))
+        Marshal.Copy(PrinterFields, 0, New IntPtr(pPrinterFields), PrinterFields.GetLength(0))
 
     End Sub
 
@@ -122,12 +122,12 @@ Public Class PrinterNotifyOptionsType
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("ReleaseResources()", Me.GetType.ToString)
         End If
-        If pJobFields.ToInt32 <> 0 Then
-            Marshal.FreeHGlobal(pJobFields)
+        If pJobFields <> 0 Then
+            Marshal.FreeHGlobal(CType(pJobFields, IntPtr))
             pJobFields = Nothing
         End If
-        If pPrinterFields.ToInt32 <> 0 Then
-            Marshal.FreeHGlobal(pPrinterFields)
+        If pPrinterFields <> 0 Then
+            Marshal.FreeHGlobal(CType(pPrinterFields, IntPtr))
             pPrinterFields = Nothing
         End If
     End Sub
@@ -170,7 +170,7 @@ Public Class PrinterNotifyOptions
     Public dwVersion As Int32
     Public dwFlags As Int32
     Public Count As Int32
-    Public lpTypes As IntPtr
+    Public lpTypes As Int32
 
     Public Sub New(ByVal MinimumJobInfoRequired As Boolean)
 
@@ -187,9 +187,9 @@ Public Class PrinterNotifyOptions
         pJobTypes = New PrinterNotifyOptionsType(MinimumJobInfoRequired)
         BytesNeeded = (2 + pJobTypes.JobFieldCount + pJobTypes.PrinterFieldCount) * 2
 
-        lpTypes = Marshal.AllocHGlobal(BytesNeeded)
+        lpTypes = CInt(Marshal.AllocHGlobal(BytesNeeded))
 
-        Marshal.StructureToPtr(pJobTypes, lpTypes, True)
+        Marshal.StructureToPtr(pJobTypes, CType(lpTypes, IntPtr), True)
 
     End Sub
 
@@ -205,8 +205,8 @@ Public Class PrinterNotifyOptions
     Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
         If disposing Then
             '\\ Free up the global memory
-            If lpTypes.ToInt32 <> 0 Then
-                Marshal.FreeHGlobal(lpTypes)
+            If lpTypes <> 0 Then
+                Marshal.FreeHGlobal(CType(lpTypes, IntPtr))
             End If
         End If
     End Sub

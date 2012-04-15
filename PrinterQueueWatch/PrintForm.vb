@@ -35,7 +35,7 @@ Imports System.ComponentModel
 Public Class PrinterForm
 
 #Region "Private properties"
-    Private _hPrinter As IntPtr
+    Private _hPrinter As Int32
     Private _fi1 As New FORM_INFO_1
 #End Region
 
@@ -165,7 +165,7 @@ Public Class PrinterForm
 #End Region
 
 #Region "Public constructor"
-    Friend Sub New(ByVal hPrinter As IntPtr, _
+    Friend Sub New(ByVal hPrinter As Int32, _
                    ByVal Flags As Int32, _
                    ByVal Name As String, _
                    ByVal Width As Int32, _
@@ -254,16 +254,16 @@ Public Class PrinterFormCollection
 
 #Region "Public constructors"
 
-    Friend Sub New(ByVal hPrinter As IntPtr)
+    Friend Sub New(ByVal hPrinter As Int32)
 
-        Dim pForm As IntPtr
+        Dim pForm As Int32
         Dim pcbNeeded As Int32
         Dim pcFormsReturned As Int32
         Dim pcbProvided As Int32
 
         If Not EnumForms(hPrinter, 1, pForm, 0, pcbNeeded, pcFormsReturned) Then
             If pcbNeeded > 0 Then
-                pForm = Marshal.AllocHGlobal(pcbNeeded)
+                pForm = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 pcbProvided = pcbNeeded
                 If Not EnumForms(hPrinter, 1, pForm, pcbProvided, pcbNeeded, pcFormsReturned) Then
                     Throw New Win32Exception
@@ -273,19 +273,19 @@ Public Class PrinterFormCollection
 
         If pcFormsReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As IntPtr = pForm
+            Dim ptNext As Int32 = pForm
             While pcFormsReturned > 0
                 Dim fi1 As New FORM_INFO_1
-                Marshal.PtrToStructure(ptNext, fi1)
+                Marshal.PtrToStructure(New IntPtr(ptNext), fi1)
                 Me.Add(New PrinterForm(hPrinter, fi1.Flags, fi1.Name, fi1.Width, fi1.Height, fi1.Left, fi1.Top, fi1.Right, fi1.Bottom))
-                ptNext = New IntPtr(ptNext.ToInt32 + Marshal.SizeOf(fi1))
+                ptNext = ptNext + Marshal.SizeOf(fi1)
                 pcFormsReturned -= 1
             End While
         End If
 
         '\\ Free the allocated buffer memory
-        If pForm.ToInt32 > 0 Then
-            Marshal.FreeHGlobal(pForm)
+        If pForm > 0 Then
+            Marshal.FreeHGlobal(CType(pForm, IntPtr))
         End If
 
     End Sub

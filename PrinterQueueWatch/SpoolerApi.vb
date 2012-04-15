@@ -45,7 +45,7 @@ Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
-                                <OutAttribute()> ByRef phPrinter As IntPtr, _
+                                <OutAttribute()> ByRef phPrinter As Int32, _
                                 <InAttribute()> ByVal pDefault As PrinterDefaults _
                                        ) As Boolean
 
@@ -59,7 +59,7 @@ Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
 SetLastError:=True, _
 ExactSpelling:=True, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolean
+    Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Int32) As Boolean
 
     End Function
 
@@ -67,7 +67,7 @@ Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolea
 SetLastError:=True, _
 ExactSpelling:=True, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Integer) As Boolean
+    Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Int64) As Boolean
 
     End Function
 #End Region
@@ -77,10 +77,10 @@ Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Integer) As Boole
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-Public Function GetPrinter _
-            (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function GetPrinter _
+            (<InAttribute()> ByVal hPrinter As Int32, _
              <InAttribute()> ByVal Level As Int32, _
-             <OutAttribute()> ByVal lpPrinter As IntPtr, _
+             <OutAttribute()> ByVal lpPrinter As Int32, _
              <InAttribute()> ByVal cbBuf As Int32, _
              <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
 
@@ -95,7 +95,7 @@ Public Function GetPrinter _
     Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
                                  <InAttribute()> ByVal Name As String, _
                                  <InAttribute()> ByVal Level As Int32, _
-                                 <OutAttribute()> ByVal lpBuf As IntPtr, _
+                                 <OutAttribute()> ByVal lpBuf As Int32, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32, _
                                  <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -106,10 +106,10 @@ Public Function GetPrinter _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
-                             <InAttribute()> ByVal Name As IntPtr, _
+    Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
+                             <InAttribute()> ByVal Name As Int32, _
                              <InAttribute()> ByVal Level As Int32, _
-                             <OutAttribute()> ByVal lpBuf As IntPtr, _
+                             <OutAttribute()> ByVal lpBuf As Int32, _
                              <InAttribute()> ByVal cbBuf As Int32, _
                              <OutAttribute()> ByRef pcbNeeded As Int32, _
                              <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -123,11 +123,11 @@ Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function GetPrinterDriver _
-            (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function GetPrinterDriver _
+            (<InAttribute()> ByVal hPrinter As Int32, _
             <InAttribute()> ByVal pEnvironment As String, _
             <InAttribute()> ByVal Level As Int32, _
-            <OutAttribute()> ByVal lpDriverInfo As IntPtr, _
+            <OutAttribute()> ByVal lpDriverInfo As Int32, _
             <InAttribute()> ByVal cbBuf As Int32, _
             <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
 
@@ -142,7 +142,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumPrinterDrivers(<InAttribute()> ByVal ServerName As String, _
                                        <InAttribute()> ByVal Environment As String, _
                                        <InAttribute()> ByVal Level As Int32, _
-                                       <OutAttribute()> ByVal lpBuf As IntPtr, _
+                                       <OutAttribute()> ByVal lpBuf As Int32, _
                                        <InAttribute()> ByVal cbBuf As Int32, _
                                        <OutAttribute()> ByRef pcbNeeded As Int32, _
                                        <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -156,9 +156,9 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-             (<InAttribute()> ByVal hPrinter As IntPtr, _
+             (<InAttribute()> ByVal hPrinter As Int32, _
              <InAttribute()> ByVal Level As Int32, _
-             <InAttribute()> ByVal pPrinter As IntPtr, _
+             <InAttribute()> ByVal pPrinter As Int32, _
              <InAttribute()> ByVal Command As PrinterControlCommands) As Boolean
 
     End Function
@@ -167,8 +167,8 @@ CallingConvention:=CallingConvention.StdCall)> _
     SetLastError:=True, CharSet:=CharSet.Unicode, _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
-   Public Function SetPrinter _
-         (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function SetPrinter _
+         (<InAttribute()> ByVal hPrinter As Int32, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_1, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -180,7 +180,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-             (<InAttribute()> ByVal hPrinter As IntPtr, _
+             (<InAttribute()> ByVal hPrinter As Int32, _
              <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
              <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_2, _
              <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -191,8 +191,8 @@ CallingConvention:=CallingConvention.StdCall)> _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function SetPrinter _
-         (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function SetPrinter _
+         (<InAttribute()> ByVal hPrinter As Int32, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_3, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -205,11 +205,11 @@ Public Function SetPrinter _
  SetLastError:=True, CharSet:=CharSet.Auto, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
-Public Function GetJob _
-                (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function GetJob _
+                (<InAttribute()> ByVal hPrinter As Int32, _
                  <InAttribute()> ByVal dwJobId As Int32, _
                  <InAttribute()> ByVal Level As Int32, _
-                 <OutAttribute()> ByVal lpJob As IntPtr, _
+                 <OutAttribute()> ByVal lpJob As Int32, _
                  <InAttribute()> ByVal cbBuf As Int32, _
                  <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
 
@@ -219,11 +219,11 @@ Public Function GetJob _
  SetLastError:=True, CharSet:=CharSet.Auto, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
-   Public Function GetJob _
+    Public Function GetJob _
                 (<InAttribute()> ByVal hPrinter As Int32, _
                  <InAttribute()> ByVal dwJobId As Int32, _
                  <InAttribute()> ByVal Level As Int32, _
-                 <OutAttribute()> ByVal lpJob As IntPtr, _
+                 <OutAttribute()> ByVal lpJob As Int64, _
                  <InAttribute()> ByVal cbBuf As Int32, _
                  <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
 
@@ -251,7 +251,7 @@ Public Function GetJob _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function FindFirstPrinterChangeNotification _
+    Public Function FindFirstPrinterChangeNotification _
                     (<InAttribute()> ByVal hPrinter As Int32, _
                      <InAttribute()> ByVal fwFlags As Int32, _
                      <InAttribute()> ByVal fwOptions As Int32, _
@@ -277,7 +277,7 @@ Public Function GetJob _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function FindFirstPrinterChangeNotification _
+    Public Function FindFirstPrinterChangeNotification _
                 (<InAttribute()> ByVal hPrinter As Int32, _
                  <InAttribute()> ByVal fwFlags As Int32, _
                  <InAttribute()> ByVal fwOptions As Int32, _
@@ -293,10 +293,10 @@ Public Function GetJob _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function FindNextPrinterChangeNotification _
-                            (<InAttribute()> ByVal hChangeObject As IntPtr, _
+                            (<InAttribute()> ByVal hChangeObject As Int32, _
                              <OutAttribute()> ByRef pdwChange As Int32, _
                              <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions, _
-                             <OutAttribute()> ByRef lppPrinterNotifyInfo As IntPtr _
+                             <OutAttribute()> ByRef lppPrinterNotifyInfo As Int32 _
                                  ) As Boolean
     End Function
 
@@ -304,11 +304,11 @@ Public Function GetJob _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function FindNextPrinterChangeNotification _
+    Public Function FindNextPrinterChangeNotification _
                         (<InAttribute()> ByVal hChangeObject As Microsoft.Win32.SafeHandles.SafeWaitHandle, _
                          <OutAttribute()> ByRef pdwChange As Int32, _
                          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions, _
-                         <OutAttribute()> ByRef lppPrinterNotifyInfo As IntPtr _
+                         <OutAttribute()> ByRef lppPrinterNotifyInfo As Int32 _
                              ) As Boolean
     End Function
 #End Region
@@ -319,7 +319,7 @@ Public Function FindNextPrinterChangeNotification _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function FreePrinterNotifyInfo _
-             (<InAttribute()> ByVal lppPrinterNotifyInfo As IntPtr) As Boolean
+             (<InAttribute()> ByVal lppPrinterNotifyInfo As Int32) As Boolean
 
     End Function
 #End Region
@@ -330,7 +330,7 @@ Public Function FindNextPrinterChangeNotification _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function FindClosePrinterChangeNotification _
-        (<InAttribute()> ByVal hChangeObject As IntPtr) As Boolean
+        (<InAttribute()> ByVal hChangeObject As Int32) As Boolean
 
     End Function
 
@@ -338,7 +338,7 @@ Public Function FindNextPrinterChangeNotification _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function FindClosePrinterChangeNotification _
+    Public Function FindClosePrinterChangeNotification _
     (<InAttribute()> ByVal hChangeObject As Microsoft.Win32.SafeHandles.SafeWaitHandle) As Boolean
 
     End Function
@@ -349,12 +349,12 @@ Public Function FindNextPrinterChangeNotification _
  SetLastError:=True, CharSet:=CharSet.Unicode, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumJobs _
-                (<InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function EnumJobs _
+                (<InAttribute()> ByVal hPrinter As Int32, _
                  <InAttribute()> ByVal FirstJob As Int32, _
                  <InAttribute()> ByVal NumberOfJobs As Int32, _
  <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As JobInfoLevels, _
- <OutAttribute()> ByVal pbOut As IntPtr, _
+ <OutAttribute()> ByVal pbOut As Int32, _
  <InAttribute()> ByVal cbIn As Int32, _
  <OutAttribute()> ByRef pcbNeeded As Int32, _
  <OutAttribute()> ByRef pcReturned As Int32 _
@@ -370,10 +370,10 @@ Public Function EnumJobs _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetJob _
-                    (<InAttribute()> ByVal hPrinter As IntPtr, _
+                    (<InAttribute()> ByVal hPrinter As Int32, _
                      <InAttribute()> ByVal dwJobId As Int32, _
                      <InAttribute()> ByVal Level As Int32, _
-                     <InAttribute()> ByVal lpJob As IntPtr, _
+                     <InAttribute()> ByVal lpJob As Int32, _
                      <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal dwCommand As PrintJobControlCommands _
                     ) As Boolean
 
@@ -384,7 +384,7 @@ Public Function EnumJobs _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetJob _
-                    (ByVal hPrinter As IntPtr, _
+                    (ByVal hPrinter As Int32, _
                      ByVal dwJobId As Int32, _
                      ByVal Level As Int32, _
                      <MarshalAs(UnmanagedType.LPStruct)> ByVal lpJob As JOB_INFO_1, _
@@ -397,8 +397,8 @@ Public Function EnumJobs _
  SetLastError:=True, CharSet:=CharSet.Unicode, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
-Public Function SetJob _
-                (ByVal hPrinter As IntPtr, _
+    Public Function SetJob _
+                (ByVal hPrinter As Int32, _
                  ByVal dwJobId As Int32, _
                  ByVal Level As Int32, _
                  <MarshalAs(UnmanagedType.LPStruct)> ByVal lpJob As JOB_INFO_2, _
@@ -413,9 +413,9 @@ Public Function SetJob _
  SetLastError:=True, CharSet:=CharSet.Unicode, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
- Public Function EnumMonitors(<InAttribute()> ByVal ServerName As String, _
+    Public Function EnumMonitors(<InAttribute()> ByVal ServerName As String, _
                               <InAttribute()> ByVal Level As Int32, _
-                              <OutAttribute()> ByVal lpBuf As IntPtr, _
+                              <OutAttribute()> ByVal lpBuf As Int32, _
                               <InAttribute()> ByVal cbBuf As Int32, _
                               <OutAttribute()> ByRef pcbNeeded As Int32, _
                               <OutAttribute()> ByRef pcReturned As Int32) As Boolean
@@ -427,9 +427,9 @@ Public Function SetJob _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumMonitors(<InAttribute()> ByVal pServerName As IntPtr, _
+    Public Function EnumMonitors(<InAttribute()> ByVal pServerName As Int32, _
                           <InAttribute()> ByVal Level As Int32, _
-                          <OutAttribute()> ByVal lpBuf As IntPtr, _
+                          <OutAttribute()> ByVal lpBuf As Int32, _
                           <InAttribute()> ByVal cbBuf As Int32, _
                           <OutAttribute()> ByRef pcbNeeded As Int32, _
                           <OutAttribute()> ByRef pcReturned As Int32) As Boolean
@@ -443,12 +443,12 @@ Public Function EnumMonitors(<InAttribute()> ByVal pServerName As IntPtr, _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function DocumentProperties _
-        (<InAttribute()> ByVal hwnd As IntPtr, _
-         <InAttribute()> ByVal hPrinter As IntPtr, _
+    Public Function DocumentProperties _
+        (<InAttribute()> ByVal hwnd As Int32, _
+         <InAttribute()> ByVal hPrinter As Int32, _
          <InAttribute()> ByVal pPrinterName As String, _
-         <OutAttribute()> ByRef pDevModeOut As IntPtr, _
-         <InAttribute()> ByVal pDevModeIn As IntPtr, _
+         <OutAttribute()> ByRef pDevModeOut As Int32, _
+         <InAttribute()> ByVal pDevModeIn As Int32, _
          <InAttribute()> ByVal Mode As DocumentPropertiesModes) As Int32
 
     End Function
@@ -459,11 +459,11 @@ Public Function EnumMonitors(<InAttribute()> ByVal pServerName As IntPtr, _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function DeviceCapabilities(<InAttribute()> ByVal pPrinterName As String, _
+    Public Function DeviceCapabilities(<InAttribute()> ByVal pPrinterName As String, _
                                         <InAttribute()> ByVal pPortName As String, _
                                         <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal CapbilityIndex As PrintDeviceCapabilitiesIndexes, _
-                                        <OutAttribute()> ByRef lpOut As IntPtr, _
-                                        <InAttribute()> ByVal pDevMode As IntPtr) As Int32
+                                        <OutAttribute()> ByRef lpOut As Int32, _
+                                        <InAttribute()> ByVal pDevMode As Int32) As Int32
 
     End Function
 
@@ -474,7 +474,7 @@ Public Function EnumMonitors(<InAttribute()> ByVal pServerName As IntPtr, _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function GetPrinterDriverDirectory( _
+    Public Function GetPrinterDriverDirectory( _
                      <InAttribute()> ByVal ServerName As String, _
                      <InAttribute()> ByVal Environment As String, _
                      <InAttribute()> ByVal Level As Int32, _
@@ -488,9 +488,9 @@ Public Function GetPrinterDriverDirectory( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function GetPrinterDriverDirectory( _
-                 <InAttribute()> ByVal ServerName As IntPtr, _
-                 <InAttribute()> ByVal Environment As IntPtr, _
+    Public Function GetPrinterDriverDirectory( _
+                 <InAttribute()> ByVal ServerName As Int32, _
+                 <InAttribute()> ByVal Environment As Int32, _
                  <InAttribute()> ByVal Level As Int32, _
                  <OutAttribute()> ByRef DriverDirectory As String, _
                  <InAttribute()> ByVal BufferSize As Int32, _
@@ -504,7 +504,7 @@ Public Function GetPrinterDriverDirectory( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function AddPrinterDriver( _
+    Public Function AddPrinterDriver( _
                        <InAttribute()> ByVal ServerName As String, _
                        <InAttribute()> ByVal Level As Int32, _
                        <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pDriverInfo As DRIVER_INFO_2) As Boolean
@@ -518,10 +518,10 @@ Public Function AddPrinterDriver( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumPorts( _
+    Public Function EnumPorts( _
                        <InAttribute()> ByVal ServerName As String, _
                        <InAttribute()> ByVal Level As Int32, _
-                       <OutAttribute()> ByVal pbOut As IntPtr, _
+                       <OutAttribute()> ByVal pbOut As Int32, _
                        <InAttribute()> ByVal cbIn As Int32, _
                        <OutAttribute()> ByRef pcbNeeded As Int32, _
                        <OutAttribute()> ByRef pcReturned As Int32 _
@@ -533,10 +533,10 @@ Public Function EnumPorts( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumPorts( _
-                       <InAttribute()> ByVal ServerName As IntPtr, _
+    Public Function EnumPorts( _
+                       <InAttribute()> ByVal ServerName As Int32, _
                        <InAttribute()> ByVal Level As Int32, _
-                       <OutAttribute()> ByVal pbOut As IntPtr, _
+                       <OutAttribute()> ByVal pbOut As Int32, _
                        <InAttribute()> ByVal cbIn As Int32, _
                        <OutAttribute()> ByRef pcbNeeded As Int32, _
                        <OutAttribute()> ByRef pcReturned As Int32 _
@@ -550,7 +550,7 @@ Public Function EnumPorts( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function SetPort( _
+    Public Function SetPort( _
       <InAttribute()> ByVal ServerName As String, _
       <InAttribute()> ByVal PortName As String, _
       <InAttribute()> ByVal Level As Long, _
@@ -566,10 +566,10 @@ Public Function SetPort( _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumPrintProcessors(<InAttribute()> ByVal ServerName As String, _
+    Public Function EnumPrintProcessors(<InAttribute()> ByVal ServerName As String, _
                                        <InAttribute()> ByVal Environment As String, _
                                        <InAttribute()> ByVal Level As Int32, _
-                                       <OutAttribute()> ByVal lpBuf As IntPtr, _
+                                       <OutAttribute()> ByVal lpBuf As Int32, _
                                        <InAttribute()> ByVal cbBuf As Int32, _
                                        <OutAttribute()> ByRef pcbNeeded As Int32, _
                                        <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -584,10 +584,10 @@ Public Function EnumPrintProcessors(<InAttribute()> ByVal ServerName As String, 
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function EnumPrinterProcessorDataTypes(<InAttribute()> ByVal ServerName As String, _
+    Public Function EnumPrinterProcessorDataTypes(<InAttribute()> ByVal ServerName As String, _
                                             <InAttribute()> ByVal PrintProcessorName As String, _
                                             <InAttribute()> ByVal Level As Int32, _
-                                            <OutAttribute()> ByVal pDataTypes As IntPtr, _
+                                            <OutAttribute()> ByVal pDataTypes As Int32, _
                                             <InAttribute()> ByVal cbBuf As Int32, _
                                             <OutAttribute()> ByRef pcbNeeded As Int32, _
                                             <OutAttribute()> ByRef pcReturned As Int32) As Boolean
@@ -601,7 +601,7 @@ Public Function EnumPrinterProcessorDataTypes(<InAttribute()> ByVal ServerName A
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-    Public Function GetForm(<InAttribute()> ByVal PrinterHandle As IntPtr, _
+    Public Function GetForm(<InAttribute()> ByVal PrinterHandle As Int32, _
                              <InAttribute()> ByVal FormName As String, _
                              <InAttribute()> ByVal Level As Integer, _
                              <OutAttribute()> ByRef pForm As FORM_INFO_1, _
@@ -618,7 +618,7 @@ CallingConvention:=CallingConvention.StdCall)> _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-    Public Function SetForm(<InAttribute()> ByVal PrinterHandle As IntPtr, _
+    Public Function SetForm(<InAttribute()> ByVal PrinterHandle As Int32, _
                              <InAttribute()> ByVal FormName As String, _
                              <InAttribute()> ByVal Level As Integer, _
                              <InAttribute()> ByRef pForm As FORM_INFO_1 _
@@ -633,9 +633,9 @@ SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumForms( _
-                      <InAttribute()> ByVal hPrinter As IntPtr, _
+                      <InAttribute()> ByVal hPrinter As Int32, _
                       <InAttribute()> ByVal Level As Int32, _
-                      <OutAttribute()> ByVal pForm As IntPtr, _
+                      <OutAttribute()> ByVal pForm As Int32, _
                       <InAttribute()> ByVal cbBuf As Int32, _
                       <OutAttribute()> ByRef pcbNeeded As Int32, _
                       <OutAttribute()> ByRef pcFormsReturned As Int32) As Boolean
@@ -648,8 +648,8 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As IntPtr, _
-                                 <OutAttribute()> ByVal pBuffer As IntPtr, _
+    Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As Int32, _
+                                 <OutAttribute()> ByVal pBuffer As Int32, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
 
@@ -659,8 +659,8 @@ CallingConvention:=CallingConvention.StdCall)> _
  SetLastError:=True, CharSet:=CharSet.Unicode, _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
- Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As Int32, _
-                             <OutAttribute()> ByVal pBuffer As IntPtr, _
+    Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As Int32, _
+                             <OutAttribute()> ByVal pBuffer As Int64, _
                              <InAttribute()> ByVal cbBuf As Int32, _
                              <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
 
@@ -672,8 +672,8 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-     Public Function WritePrinter(<InAttribute()> ByVal hPrinter As IntPtr, _
-                                 <OutAttribute()> ByVal pBuffer As IntPtr, _
+    Public Function WritePrinter(<InAttribute()> ByVal hPrinter As Int32, _
+                                 <OutAttribute()> ByVal pBuffer As Int32, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
 

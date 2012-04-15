@@ -54,7 +54,7 @@ Public Class PrintJob
 
 #Region "Private member variables"
 
-    Private mhPrinter As IntPtr
+    Private mhPrinter As Int32
     Private midJob As Int32
 
     Private bHandleOwnedByMe As Boolean
@@ -1369,7 +1369,7 @@ Public Class PrintJob
     Public Sub Cancel()
 
         If System.Environment.OSVersion.Version.Major < 4 Then   '\\ For systems less than windows NT 4...
-            If Not SetJob(mhPrinter, midJob, 0, New IntPtr(0), PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
+            If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
                 End If
@@ -1380,7 +1380,7 @@ Public Class PrintJob
                 End If
             End If
         Else
-            If Not SetJob(mhPrinter, midJob, 0, New IntPtr(0), PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
+            If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
                 End If
@@ -1431,7 +1431,7 @@ Public Class PrintJob
     ''' -----------------------------------------------------------------------------
     Public Sub Delete()
 
-        If Not SetJob(mhPrinter, midJob, 0, New IntPtr(0), PrintJobControlCommands.JOB_CONTROL_DELETE) Then
+        If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_DELETE) Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine("SetJob (Delete) failed", Me.GetType.ToString)
             End If
@@ -1468,7 +1468,7 @@ Public Class PrintJob
             If Not Value.Equals(Me.Paused) Then
                 '\\ The paused state has changed: Call the pause or resume command as appropriate
                 If Value Then
-                    If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_PAUSE) Then
+                    If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_PAUSE) Then
                         Throw New Win32Exception
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                             Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
@@ -1479,7 +1479,7 @@ Public Class PrintJob
                         End If
                     End If
                 Else
-                    If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_RESUME) Then
+                    If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_RESUME) Then
                         Throw New Win32Exception
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                             Trace.WriteLine("SetJob (Resume) failed", Me.GetType.ToString)
@@ -1697,9 +1697,9 @@ Public Class PrintJob
         If OpenPrinter(Me.UniquePrinterObject, phPrinter, pDefault) Then
             If phPrinter <> 0 Then
                 'Read this print job into a bit of memory....
-                Dim ptBuf As IntPtr
+                Dim ptBuf As Int32
                 Try
-                    ptBuf = Marshal.AllocHGlobal(Me.JobSize)
+                    ptBuf = CInt(Marshal.AllocHGlobal(Me.JobSize))
                 Catch exMem As OutOfMemoryException
                     Throw New PrintJobTransferException("Print job is too large", exMem)
                     Exit Sub
@@ -1723,7 +1723,7 @@ Public Class PrintJob
                         For CurrentPage As Integer = 1 To DataFile.TotalPages
                             '
                             'Print this page
-                            If Not WritePrinter(New IntPtr(phPrinterTarget), ptBuf, Me.JobSize, pcbneeded) Then
+                            If Not WritePrinter(phPrinterTarget, ptBuf, Me.JobSize, pcbneeded) Then
                                 Throw New PrintJobTransferException("Failed to write the print job", New Win32Exception)
                                 Exit Sub
                             End If
@@ -1740,9 +1740,9 @@ Public Class PrintJob
                 End If
 
                 'Free this buffer again
-                Marshal.FreeHGlobal(ptBuf)
+                Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
             Else
-                    Throw New InsufficentPrinterAccessRightsException("Could not read the print job")
+                Throw New InsufficentPrinterAccessRightsException("Could not read the print job")
             End If
         Else
             Throw New Win32Exception
@@ -1759,7 +1759,7 @@ Public Class PrintJob
 
             pDef.DesiredAccess = PrinterAccessRights.PRINTER_ACCESS_USE
 
-            If mhPrinter.ToInt32 = 0 Then
+            If mhPrinter = 0 Then
                 If Not OpenPrinter(PrinterName, mhPrinter, pDef) Then
                     Throw New Win32Exception
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
@@ -1769,7 +1769,7 @@ Public Class PrintJob
                     bHandleOwnedByMe = True
                 End If
             End If
-            Return mhPrinter.ToInt32
+            Return mhPrinter
         End Get
     End Property
 #End Region
@@ -1832,7 +1832,7 @@ Public Class PrintJob
 #End Region
 
 #Region "Public constructor"
-    Friend Sub New(ByVal hPrinter As IntPtr, ByVal idJob As Int32)
+    Friend Sub New(ByVal hPrinter As Int32, ByVal idJob As Int32)
 
         If PrintJob.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & hPrinter.ToString & "," & idJob.ToString & ")", Me.GetType.ToString)
@@ -1861,7 +1861,7 @@ Public Class PrintJob
         Dim hPrinter As Integer
         bHandleOwnedByMe = True
         If OpenPrinter(DeviceName, hPrinter, 0) Then
-            mhPrinter = New IntPtr(hPrinter)
+            mhPrinter = hPrinter
             midJob = idJob
             Call InitJobInfo()
         Else
@@ -2074,11 +2074,11 @@ End Class
 <System.Runtime.InteropServices.ComVisible(False)> _
 <System.Security.SuppressUnmanagedCodeSecurity()> _
 Public Class PrintJobCollection
-    Inherits Generic.SortedList(Of Integer, PrintJob)
+    Inherits System.Collections.Concurrent.ConcurrentDictionary(Of Integer, PrintJob)
 
 #Region "Private member variables"
     Private bHandleOwnedByMe As Boolean
-    Private hPrinter As IntPtr
+    Private hPrinter As Int32
 #End Region
 
 #Region "JobPendingDeletion"
@@ -2104,23 +2104,20 @@ Public Class PrintJobCollection
 
 #Region "Public interface"
 
-    Friend ReadOnly Property AddOrGetById(ByVal dwJobId As Int32, ByVal mhPrinter As IntPtr) As PrintJob
+    Friend ReadOnly Property AddOrGetById(ByVal dwJobId As Int32, ByVal mhPrinter As Int32) As PrintJob
         Get
-            Dim printJobLock As Object = New Object()
-            SyncLock printJobLock
-                Dim pjThis As PrintJob
-                If Not ContainsJobId(dwJobId) Then
-                    Try
-                        pjThis = New PrintJob(mhPrinter, dwJobId)
-                        Me.Add(dwJobId, pjThis)
-                    Catch e As Win32Exception
-                        If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
-                            Trace.WriteLine("AddOrGetById(" & dwJobId.ToString & ") failed - " & e.Message & "::" & e.NativeErrorCode, Me.GetType.ToString)
-                        End If
-                    End Try
-                End If
-                Return ItemByJobId(dwJobId)
-            End SyncLock
+            Dim pjThis As PrintJob
+            If Not ContainsJobId(dwJobId) Then
+                Try
+                    pjThis = New PrintJob(mhPrinter, dwJobId)
+                    Me.Add(dwJobId, pjThis)
+                Catch e As Win32Exception
+                    If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
+                        Trace.WriteLine("AddOrGetById(" & dwJobId.ToString & ") failed - " & e.Message & "::" & e.NativeErrorCode, Me.GetType.ToString)
+                    End If
+                End Try
+            End If
+            Return ItemByJobId(dwJobId)
         End Get
     End Property
 
@@ -2146,6 +2143,10 @@ Public Class PrintJobCollection
         Me.Add(pjIn.JobId, pjIn)
     End Sub
 
+    Public Overloads Sub Add(ByVal jobId As Integer, ByVal pjIn As PrintJob)
+        MyBase.TryAdd(pjIn.JobId, pjIn)
+    End Sub
+
     ''' -----------------------------------------------------------------------------
     ''' <summary>
     ''' Returns true if this collection contains the given Job Id
@@ -2166,7 +2167,8 @@ Public Class PrintJobCollection
 
     <Description("Removes the print job identified by the given job id from the printjobs collection")> _
     Public Sub RemoveByJobId(ByVal pjId As Int32)
-        Me.Remove(pjId)
+        Dim removed As New PrintJob()
+        Me.TryRemove(pjId, removed)
     End Sub
 
 
@@ -2174,10 +2176,10 @@ Public Class PrintJobCollection
 #End Region
 #Region "Public constructors"
 
-    Private Sub InitJobList(ByVal mhPrinter As IntPtr, ByVal JobCount As Int32)
+    Private Sub InitJobList(ByVal mhPrinter As Int32, ByVal JobCount As Int32)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
-        Dim pJobInfo As IntPtr
+        Dim pJobInfo As Int32
 
         '\\ Save the printer handle
         hPrinter = mhPrinter
@@ -2187,20 +2189,20 @@ Public Class PrintJobCollection
             JobCount = 255
         End If
 
-        If Not EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, New IntPtr(0), 0, pcbNeeded, pcReturned) Then
+        If Not EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, 0, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pJobInfo = Marshal.AllocHGlobal(pcbNeeded)
+                pJobInfo = CInt(Marshal.AllocHGlobal(pcbNeeded))
                 Dim pcbProvided As Int32 = pcbNeeded
                 Dim pcbTotalNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
                 Dim pcTotalReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
                 If EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, pJobInfo, pcbProvided, pcbTotalNeeded, pcTotalReturned) Then
                     If pcTotalReturned > 0 Then
                         Dim item As Int32
-                        Dim pnextJob As IntPtr = pJobInfo
+                        Dim pnextJob As Int32 = pJobInfo
                         For item = 0 To pcTotalReturned - 1
                             Dim jiTemp As New JOB_INFO_1(pnextJob)
                             Call Add(New PrintJob(mhPrinter, jiTemp.JobId))
-                            pnextJob = New IntPtr(pnextJob.ToInt32 + 64)
+                            pnextJob = (pnextJob + 64)
                         Next
                     End If
                 Else
@@ -2209,7 +2211,7 @@ Public Class PrintJobCollection
                         Trace.WriteLine("EnumJobs() failed", Me.GetType.ToString)
                     End If
                 End If
-                Marshal.FreeHGlobal(pJobInfo)
+                Marshal.FreeHGlobal(CType(pJobInfo, IntPtr))
             End If
         End If
     End Sub
@@ -2245,7 +2247,7 @@ Public Class PrintJobCollection
     ''' </history>
     ''' -----------------------------------------------------------------------------
     <Description("Creates a new list and fills it with all the jobs currently on a given printer's queue by printer handle")> _
-    Public Sub New(ByVal mhPrinter As IntPtr, ByVal JobCount As Int32)
+    Public Sub New(ByVal mhPrinter As Int32, ByVal JobCount As Int32)
 
         If PrintJob.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & mhPrinter.ToString & "," & JobCount.ToString & ")", Me.GetType.ToString)
@@ -2281,7 +2283,7 @@ Public Class PrintJobCollection
         Dim hPrinter As Integer
         bHandleOwnedByMe = True
         If OpenPrinter(DeviceName, hPrinter, 0) Then
-            Call InitJobList(New IntPtr(hPrinter), JobCount)
+            Call InitJobList(hPrinter, JobCount)
         Else
             Throw New Win32Exception
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
@@ -2596,7 +2598,7 @@ Friend Class PrinterDataFile
 #End Region
 
 #Region "Private members"
-    Private _ptBuf As IntPtr
+    Private _ptBuf As Int32
     Private _DataType As String
 
     Private _TotalPages As Integer
@@ -2618,7 +2620,7 @@ Friend Class PrinterDataFile
 #End Region
 
 #Region "Public constructors"
-    Public Sub New(ByVal Buffer As IntPtr, ByVal DataType As String)
+    Public Sub New(ByVal Buffer As Int32, ByVal DataType As String)
         _ptBuf = Buffer
         _DataType = DataType
     End Sub
@@ -2651,7 +2653,7 @@ Friend Class EMF_SpoolFile
 #Region "Private members"
         Private _StartOffset As Integer
         Private _EndOffset As Integer
-        Private _BasePtr As IntPtr
+        Private _BasePtr As Int32
 
         Private _Header As EMFMETAHEADER
 #End Region
@@ -2671,7 +2673,7 @@ Friend Class EMF_SpoolFile
 #End Region
 
 #Region "Public constructor"
-        Public Sub New(ByVal MemPtr As IntPtr, ByVal Start As Integer)
+        Public Sub New(ByVal MemPtr As Int32, ByVal Start As Integer)
 
             _BasePtr = MemPtr
             _StartOffset = Start
@@ -2684,7 +2686,7 @@ Friend Class EMF_SpoolFile
 #End Region
 #Region "EMFMETAHEADER"
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode), System.Security.SuppressUnmanagedCodeSecurity()> _
-     Private Class EMFMETAHEADER
+    Private Class EMFMETAHEADER
 
 #Region "Properties"
         '\\ EMR record header
@@ -2761,7 +2763,7 @@ Friend Class EMF_SpoolFile
 #End Region
 
 #Region "Public constructor"
-        Public Sub New(ByVal MemPtr As IntPtr, ByVal Start As Integer)
+        Public Sub New(ByVal MemPtr As Int32, ByVal Start As Integer)
 
             iType = Marshal.ReadInt32(MemPtr, Start)
             Start += Marshal.SizeOf(GetType(Int32))
@@ -2833,7 +2835,7 @@ Friend Class EMF_SpoolFile
                 Start += Marshal.SizeOf(GetType(Int32))
             End If
             If _nDescription > 0 Then
-                _Description = Marshal.PtrToStringAuto(New IntPtr(MemPtr.ToInt32 + Start), _nDescription)
+                _Description = Marshal.PtrToStringAuto(CType(MemPtr + Start, IntPtr), _nDescription)
             End If
 
         End Sub
@@ -2981,7 +2983,7 @@ Friend Class EMF_SpoolFile
 
 #Region "Private enumerated types"
             <Flags()> _
-        Private Enum DeviceModeFieldFlags
+            Private Enum DeviceModeFieldFlags
                 DM_POSITION = &H20
                 DM_COLLATE = &H8000
                 DM_COLOR = &H800&

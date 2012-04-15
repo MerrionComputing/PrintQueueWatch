@@ -24,7 +24,7 @@ Friend Class PrinterChangeNotificationThread
 #Region "Private members"
 
     Private _Thread As Thread
-    Private _PrinterHandle As IntPtr
+    Private _PrinterHandle As Int32
 
     Private _ThreadTimeout As Integer = INFINITE_THREAD_TIMEOUT
 
@@ -45,7 +45,7 @@ Friend Class PrinterChangeNotificationThread
 #Region "Public methods"
 
     '\\ Start a watching thread
-    Public Sub StartWatching() 'ByVal PrinterHandle As IntPtr)
+    Public Sub StartWatching() 'ByVal PrinterHandle As Int32)
 
         _Thread = New Thread(AddressOf Me.StartThread)
         Try
@@ -139,7 +139,7 @@ Friend Class PrinterChangeNotificationThread
 
 #Region "Public constructors"
 
-    Public Sub New(ByVal PrinterHandle As IntPtr, ByVal ThreadTimeout As Integer, ByVal MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels, ByVal WatchFlags As Integer, ByRef PrinterInformation As PrinterInformation)
+    Public Sub New(ByVal PrinterHandle As Int32, ByVal ThreadTimeout As Integer, ByVal MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels, ByVal WatchFlags As Integer, ByRef PrinterInformation As PrinterInformation)
 
         '\\ Save a local copy of the information passed in...
         _PrinterHandle = PrinterHandle
@@ -164,7 +164,7 @@ Friend Class PrinterChangeNotificationThread
             Trace.WriteLine("StartThread() of printer handle :" & _PrinterHandle.ToString, Me.GetType.ToString)
         End If
 
-        If _PrinterHandle.ToInt32 = 0 Then
+        If _PrinterHandle = 0 Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine("StartThread(): _PrinterHandle not set", Me.GetType.ToString)
             End If
@@ -173,7 +173,7 @@ Friend Class PrinterChangeNotificationThread
         End If
 
         '\\ Initialise the printer change notification
-        Dim mhWait As Microsoft.Win32.SafeHandles.SafeWaitHandle
+        Dim mhWait As Microsoft.Win32.SafeHandles.SafeWaitHandle = Nothing
 
         If _WatchFlags = 0 Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceWarning Then
@@ -192,7 +192,7 @@ Friend Class PrinterChangeNotificationThread
         If _MonitorLevel = PrinterMonitorComponent.MonitorJobEventInformationLevels.MaximumJobInformation Or _MonitorLevel = PrinterMonitorComponent.MonitorJobEventInformationLevels.MinimumJobInformation Then
             Try
                 mhWait = FindFirstPrinterChangeNotification( _
-                                                            _PrinterHandle.ToInt32, _
+                                                            _PrinterHandle, _
                                                             _WatchFlags, _
                                                             0, _
                                                            _PrinterNotifyOptions)
@@ -222,7 +222,7 @@ Friend Class PrinterChangeNotificationThread
         ElseIf _MonitorLevel = PrinterMonitorComponent.MonitorJobEventInformationLevels.NoJobInformation Then
             Try
                 mhWait = FindFirstPrinterChangeNotification( _
-                                                            _PrinterHandle.ToInt32, _
+                                                            _PrinterHandle, _
                                                             _WatchFlags, _
                                                             0, _
                                                             0)
@@ -303,7 +303,7 @@ Friend Class PrinterChangeNotificationThread
     ''' <remarks></remarks>
     Private Sub DecodePrinterChangeInformation()
         Dim mpdChangeFlags As Integer
-        Dim mlpPrinter As IntPtr
+        Dim mlpPrinter As Int32
         Dim pInfo As PrinterNotifyInfo
         Dim piEventFlags As PrinterEventFlagDecoder
 
@@ -329,7 +329,7 @@ Friend Class PrinterChangeNotificationThread
                                                    mlpPrinter) Then
 
 
-                    If mlpPrinter.ToInt32 <> 0 Then
+                    If mlpPrinter <> 0 Then
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
                             Trace.WriteLine("FindNextPrinterChangeNotification returned a pointer to PRINTER_NOTIFY_INFO :" & mlpPrinter.ToString & " for printer handle: " & _PrinterHandle.ToString, Me.GetType.ToString)
                         End If
@@ -357,7 +357,7 @@ Friend Class PrinterChangeNotificationThread
                                 Throw New Win32Exception
                             Else
                                 _PrinterNotifyOptions.dwFlags = _PrinterNotifyOptions.dwFlags And (Not PRINTER_NOTIFY_OPTIONS_REFRESH)
-                                If mlpPrinter.ToInt32 <> 0 Then
+                                If mlpPrinter <> 0 Then
                                     pInfo = New PrinterNotifyInfo(_PrinterHandle, mlpPrinter, _PrinterInformation.PrintJobs)
                                 End If
                             End If

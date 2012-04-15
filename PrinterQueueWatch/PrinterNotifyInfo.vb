@@ -17,14 +17,14 @@ Public Class PrinterNotifyInfoData
     Public dwReserved As Int32
     Public dwId As Int32
     Public cbBuff As Int32
-    Public pBuff As IntPtr
+    Public pBuff As Int32
 
-    Public Sub New(ByVal lpAddress As IntPtr)
+    Public Sub New(ByVal lpAddress As Int32)
 
         If PrinterNotifyInfoData.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & lpAddress.ToString & ")", Me.GetType.ToString)
         End If
-        Marshal.PtrToStructure(lpAddress, Me)
+        Marshal.PtrToStructure(New IntPtr(lpAddress), Me)
 
     End Sub
 
@@ -41,7 +41,7 @@ Public Class PrinterNotifyInfoData
     End Property
 
     Public Overrides Function ToString() As String
-        Return Marshal.PtrToStringAnsi(pBuff)
+        Return Marshal.PtrToStringAnsi(CType(pBuff, IntPtr))
     End Function
 
     Public Function ToInt32() As Int32
@@ -65,26 +65,26 @@ Public Class PrinterNotifyInfo
 
 #End Region
 
-    Public Sub New(ByVal mhPrinter As IntPtr, ByVal lpAddress As IntPtr, ByRef PrintJobs As PrintJobCollection)
+    Public Sub New(ByVal mhPrinter As Int32, ByVal lpAddress As Int32, ByRef PrintJobs As PrintJobCollection)
 
         If PrinterNotifyInfoData.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & mhPrinter.ToString & "," & lpAddress.ToString & ")", Me.GetType.ToString)
         End If
 
-        If Not lpAddress.ToInt32 = 0 Then
+        If Not lpAddress = 0 Then
             '\\ Create the array list of jobs involved in this event
             colPrintJobs = New ArrayList
 
             '\\ Read the data of this printer notification event
-            Marshal.PtrToStructure(lpAddress, msInfo)
+            Marshal.PtrToStructure(New IntPtr(lpAddress), msInfo)
 
             Dim nInfoDataItem As Integer
             '\\ Offset the pointer by the size of this class
-            Dim lOffset As Integer = lpAddress.ToInt32 + Marshal.SizeOf(msInfo)
+            Dim lOffset As Integer = lpAddress + Marshal.SizeOf(msInfo)
 
             '\\ Process the .adata array
             For nInfoDataItem = 0 To msInfo.Count - 1
-                Dim itemdata As New PrinterNotifyInfoData(New IntPtr(lOffset))
+                Dim itemdata As New PrinterNotifyInfoData(lOffset)
                 If itemdata.Type = Printer_Notification_Types.JOB_NOTIFY_TYPE Then
 
                     Dim pjThis As PrintJob
@@ -100,33 +100,33 @@ Public Class PrinterNotifyInfo
                         With pjThis
                             Select Case itemdata.Field
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_PRINTER_NAME
-                                    .InitPrinterName = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitPrinterName = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_USER_NAME
-                                    .InitUsername = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitUsername = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_MACHINE_NAME
-                                    .InitMachineName = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitMachineName = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_DATATYPE
-                                    .InitDataType = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitDataType = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_DOCUMENT
-                                    .InitDocument = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitDocument = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_DRIVER_NAME
-                                    .InitDrivername = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitDrivername = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_NOTIFY_NAME
-                                    .InitNotifyUsername = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitNotifyUsername = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_PAGES_PRINTED
                                     .InitPagesPrinted = itemdata.ToInt32
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_PARAMETERS
-                                    .InitParameters = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitParameters = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_POSITION
                                     .InitPosition = itemdata.ToInt32
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_PRINT_PROCESSOR
-                                    .InitPrintProcessorName = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitPrintProcessorName = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_PRIORITY
                                     .InitPriority = itemdata.ToInt32
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_STATUS
                                     .InitStatus = itemdata.ToInt32
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_STATUS_STRING
-                                    .InitStatusDescription = Marshal.PtrToStringUni(itemdata.pBuff)
+                                    .InitStatusDescription = Marshal.PtrToStringUni(CType(itemdata.pBuff, IntPtr))
                                 Case Job_Notify_Field_Indexes.JOB_NOTIFY_FIELD_TOTAL_PAGES
                                     .InitTotalPages = itemdata.ToInt32
                                 Case Else

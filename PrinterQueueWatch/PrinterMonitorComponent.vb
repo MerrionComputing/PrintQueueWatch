@@ -90,7 +90,7 @@ Public Class PrinterMonitorComponent
 #Region "Private Member Variables"
 
     '\\ Printer handle - returned by the OpenPrinter API call
-    Private mhPrinter As IntPtr
+    Private mhPrinter As Int32
     Private msDeviceName As String
 
     '\\ A combination of PrinterChangeNotificationGeneralFlags that describe what to monitor
@@ -409,7 +409,7 @@ Public Class PrinterMonitorComponent
     <Description("The number of jobs on the queued on the printer being monitored")> _
     Public ReadOnly Property JobCount() As Int32
         Get
-            If mhPrinter.ToInt32 <> 0 Then
+            If mhPrinter <> 0 Then
                 Return Me.PrinterInformation.JobCount
             Else
                 Return 0
