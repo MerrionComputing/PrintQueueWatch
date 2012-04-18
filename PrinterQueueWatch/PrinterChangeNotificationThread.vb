@@ -24,7 +24,7 @@ Friend Class PrinterChangeNotificationThread
 #Region "Private members"
 
     Private _Thread As Thread
-    Private _PrinterHandle As Int32
+    Private _PrinterHandle As IntPtr
 
     Private _ThreadTimeout As Integer = INFINITE_THREAD_TIMEOUT
 
@@ -32,7 +32,7 @@ Friend Class PrinterChangeNotificationThread
     Private _WaitHandle As AutoResetEvent
 
     Private _MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels
-    Private _WatchFlags As Integer
+    Private _WatchFlags As Int32
 
     Private _PrinterNotifyOptions As PrinterNotifyOptions
     Private _PrinterInformation As PrinterInformation
@@ -139,7 +139,7 @@ Friend Class PrinterChangeNotificationThread
 
 #Region "Public constructors"
 
-    Public Sub New(ByVal PrinterHandle As Int32, ByVal ThreadTimeout As Integer, ByVal MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels, ByVal WatchFlags As Integer, ByRef PrinterInformation As PrinterInformation)
+    Public Sub New(ByVal PrinterHandle As IntPtr, ByVal ThreadTimeout As Integer, ByVal MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels, ByVal WatchFlags As Integer, ByRef PrinterInformation As PrinterInformation)
 
         '\\ Save a local copy of the information passed in...
         _PrinterHandle = PrinterHandle
@@ -164,7 +164,7 @@ Friend Class PrinterChangeNotificationThread
             Trace.WriteLine("StartThread() of printer handle :" & _PrinterHandle.ToString, Me.GetType.ToString)
         End If
 
-        If _PrinterHandle = 0 Then
+        If _PrinterHandle.ToInt64 = 0 Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine("StartThread(): _PrinterHandle not set", Me.GetType.ToString)
             End If
@@ -225,7 +225,7 @@ Friend Class PrinterChangeNotificationThread
                                                             _PrinterHandle, _
                                                             _WatchFlags, _
                                                             0, _
-                                                            0)
+                                                            IntPtr.Zero)
 
             Catch e As Win32Exception
                 '\\ An operating system error has been trapped and returned

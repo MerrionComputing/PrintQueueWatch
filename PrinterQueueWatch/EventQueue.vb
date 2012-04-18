@@ -234,6 +234,7 @@ Friend Class EventQueue
         If disposing Then
             Call Shutdown()
             If (Not (_WaitHandle Is Nothing)) Then
+                _WaitHandle.Dispose()
                 _WaitHandle = Nothing
             End If
         End If

@@ -11,7 +11,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("A component to monitor a printer queue")> 
 <Assembly: AssemblyCompany("Merrion Computing Ltd")> 
 <Assembly: AssemblyProduct("MCL PrintQueueWatch")> 
-<Assembly: AssemblyCopyright("(c) 2002 - 2008 Merrion Computing Ltd")> 
+<Assembly: AssemblyCopyright("(c) 2002 - 2012 Merrion Computing Ltd")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: CLSCompliant(True)> 
 
@@ -25,7 +25,7 @@ Imports System.Runtime.InteropServices
 ' You can specify all the values or you can default the Build and Revision Numbers 
 ' by using the '*' as shown below:
 
-<Assembly: AssemblyVersion("2.0.7.*")> 
+<Assembly: AssemblyVersion("2.0.8.*")> 
 
 '\\ --[Assembly security]----------------------------------------------------
 '\\ Permission requests

@@ -1,6 +1,6 @@
 '--[PrinterMonitoringExceptions]-----------------------------------------
 '\\ Namespace for all the spooler related exceptions 
-'\\ (c) 2003 Merrion Computing Ltd
+'\\ (c) 2003-2012 Merrion Computing Ltd
 '\\ http://www.merrioncomputing.com
 '\\ ------------------------------------------------------------------
 Namespace PrinterMonitoringExceptions
@@ -27,7 +27,7 @@ Namespace PrinterMonitoringExceptions
         Inherits System.Exception
 
         Public Sub New()
-            MyBase.New(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pem_NoPrinterAccess"))
+            MyBase.New(PrinterMonitorComponent.resources.GetString("pem_NoPrinterAccess"))
         End Sub
 
         Public Sub New(ByVal Message As String)
@@ -67,7 +67,7 @@ Namespace PrinterMonitoringExceptions
         Inherits System.Exception
 
         Public Sub New()
-            MyBase.New(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pem_NoJobAccess"))
+            MyBase.New(PrinterMonitorComponent.resources.GetString("pem_NoJobAccess"))
         End Sub
 
         Public Sub New(ByVal Message As String)

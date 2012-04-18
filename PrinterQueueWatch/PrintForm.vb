@@ -35,7 +35,7 @@ Imports System.ComponentModel
 Public Class PrinterForm
 
 #Region "Private properties"
-    Private _hPrinter As Int32
+    Private _hPrinter As IntPtr
     Private _fi1 As New FORM_INFO_1
 #End Region
 
@@ -165,7 +165,7 @@ Public Class PrinterForm
 #End Region
 
 #Region "Public constructor"
-    Friend Sub New(ByVal hPrinter As Int32, _
+    Friend Sub New(ByVal hPrinter As IntPtr, _
                    ByVal Flags As Int32, _
                    ByVal Name As String, _
                    ByVal Width As Int32, _
@@ -254,7 +254,7 @@ Public Class PrinterFormCollection
 
 #Region "Public constructors"
 
-    Friend Sub New(ByVal hPrinter As Int32)
+    Friend Sub New(ByVal hPrinter As IntPtr)
 
         Dim pForm As Int32
         Dim pcbNeeded As Int32

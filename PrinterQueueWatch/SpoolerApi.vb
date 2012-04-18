@@ -20,8 +20,8 @@ Module SpoolerApi
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
-                            <OutAttribute()> ByRef phPrinter As Int32, _
+    Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
+                            <OutAttribute()> ByRef phPrinter As IntPtr, _
                                <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pDefault As PRINTER_DEFAULTS _
                                ) As Boolean
 
@@ -31,9 +31,9 @@ Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
-                              <OutAttribute()> ByRef phPrinter As Int32, _
-                              <InAttribute()> ByVal pDefault As Int32 _
+    Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
+                              <OutAttribute()> ByRef phPrinter As IntPtr, _
+                              <InAttribute()> ByVal pDefault As Integer _
                                ) As Boolean
 
     End Function
@@ -45,7 +45,7 @@ Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
-                                <OutAttribute()> ByRef phPrinter As Int32, _
+                                <OutAttribute()> ByRef phPrinter As IntPtr, _
                                 <InAttribute()> ByVal pDefault As PrinterDefaults _
                                        ) As Boolean
 
@@ -59,15 +59,7 @@ Public Function OpenPrinter(<InAttribute()> ByVal pPrinterName As String, _
 SetLastError:=True, _
 ExactSpelling:=True, _
 CallingConvention:=CallingConvention.StdCall)> _
-    Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Int32) As Boolean
-
-    End Function
-
-    <DllImport("winspool.drv", EntryPoint:="ClosePrinter", _
-SetLastError:=True, _
-ExactSpelling:=True, _
-CallingConvention:=CallingConvention.StdCall)> _
-    Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As Int64) As Boolean
+    Public Function ClosePrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolean
 
     End Function
 #End Region
@@ -78,7 +70,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function GetPrinter _
-            (<InAttribute()> ByVal hPrinter As Int32, _
+            (<InAttribute()> ByVal hPrinter As IntPtr, _
              <InAttribute()> ByVal Level As Int32, _
              <OutAttribute()> ByVal lpPrinter As Int32, _
              <InAttribute()> ByVal cbBuf As Int32, _
@@ -124,12 +116,12 @@ SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function GetPrinterDriver _
-            (<InAttribute()> ByVal hPrinter As Int32, _
+            (<InAttribute()> ByVal hPrinter As IntPtr, _
             <InAttribute()> ByVal pEnvironment As String, _
             <InAttribute()> ByVal Level As Int32, _
-            <OutAttribute()> ByVal lpDriverInfo As Int32, _
-            <InAttribute()> ByVal cbBuf As Int32, _
-            <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
+            <OutAttribute()> ByVal lpDriverInfo As IntPtr, _
+            <InAttribute()> ByVal cbBuf As IntPtr, _
+            <OutAttribute()> ByRef lpbSizeNeeded As IntPtr) As Boolean
 
     End Function
 #End Region
@@ -156,9 +148,9 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-             (<InAttribute()> ByVal hPrinter As Int32, _
+             (<InAttribute()> ByVal hPrinter As IntPtr, _
              <InAttribute()> ByVal Level As Int32, _
-             <InAttribute()> ByVal pPrinter As Int32, _
+             <InAttribute()> ByVal pPrinter As IntPtr, _
              <InAttribute()> ByVal Command As PrinterControlCommands) As Boolean
 
     End Function
@@ -168,7 +160,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-         (<InAttribute()> ByVal hPrinter As Int32, _
+         (<InAttribute()> ByVal hPrinter As IntPtr, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_1, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -180,7 +172,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-             (<InAttribute()> ByVal hPrinter As Int32, _
+             (<InAttribute()> ByVal hPrinter As IntPtr, _
              <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
              <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_2, _
              <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -192,7 +184,7 @@ SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetPrinter _
-         (<InAttribute()> ByVal hPrinter As Int32, _
+         (<InAttribute()> ByVal hPrinter As IntPtr, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As PrinterInfoLevels, _
          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinter As PRINTER_INFO_3, _
          <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Command As PrinterControlCommands) As Boolean
@@ -206,53 +198,28 @@ CallingConvention:=CallingConvention.StdCall)> _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
     Public Function GetJob _
-                (<InAttribute()> ByVal hPrinter As Int32, _
+                (<InAttribute()> ByVal hPrinter As IntPtr, _
                  <InAttribute()> ByVal dwJobId As Int32, _
                  <InAttribute()> ByVal Level As Int32, _
-                 <OutAttribute()> ByVal lpJob As Int32, _
+                 <OutAttribute()> ByVal lpJob As IntPtr, _
                  <InAttribute()> ByVal cbBuf As Int32, _
                  <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
 
     End Function
 
-    <DllImport("winspool.drv", EntryPoint:="GetJob", _
- SetLastError:=True, CharSet:=CharSet.Auto, _
- ExactSpelling:=False, _
- CallingConvention:=CallingConvention.StdCall)> _
-    Public Function GetJob _
-                (<InAttribute()> ByVal hPrinter As Int32, _
-                 <InAttribute()> ByVal dwJobId As Int32, _
-                 <InAttribute()> ByVal Level As Int32, _
-                 <OutAttribute()> ByVal lpJob As Int64, _
-                 <InAttribute()> ByVal cbBuf As Int32, _
-                 <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
-
-    End Function
 
 
 #End Region
 
 #Region "FindFirstPrinterChangeNotification"
 
-    <DllImport("winspool.drv", EntryPoint:="FindFirstPrinterChangeNotification", _
-    SetLastError:=True, CharSet:=CharSet.Unicode, _
-    ExactSpelling:=False, _
-    CallingConvention:=CallingConvention.StdCall)> _
-    Public Function UnsafeFindFirstPrinterChangeNotification _
-                        (<InAttribute()> ByVal hPrinter As Int32, _
-                         <InAttribute()> ByVal fwFlags As Int32, _
-                         <InAttribute()> ByVal fwOptions As Int32, _
-                         <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions _
-                            ) As Int32
-
-    End Function
 
     <DllImport("winspool.drv", EntryPoint:="FindFirstPrinterChangeNotification", _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function FindFirstPrinterChangeNotification _
-                    (<InAttribute()> ByVal hPrinter As Int32, _
+                    (<InAttribute()> ByVal hPrinter As IntPtr, _
                      <InAttribute()> ByVal fwFlags As Int32, _
                      <InAttribute()> ByVal fwOptions As Int32, _
                      <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions _
@@ -265,11 +232,11 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function UnsafeFindFirstPrinterChangeNotification _
-                    (<InAttribute()> ByVal hPrinter As Int32, _
+                    (<InAttribute()> ByVal hPrinter As IntPtr, _
                      <InAttribute()> ByVal fwFlags As Int32, _
                      <InAttribute()> ByVal fwOptions As Int32, _
-                     <InAttribute()> ByVal pPrinterNotifyOptions As Int32 _
-                        ) As Int32
+                     <InAttribute()> ByVal pPrinterNotifyOptions As IntPtr _
+                        ) As IntPtr
 
     End Function
 
@@ -278,10 +245,10 @@ CallingConvention:=CallingConvention.StdCall)> _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function FindFirstPrinterChangeNotification _
-                (<InAttribute()> ByVal hPrinter As Int32, _
+                (<InAttribute()> ByVal hPrinter As IntPtr, _
                  <InAttribute()> ByVal fwFlags As Int32, _
                  <InAttribute()> ByVal fwOptions As Int32, _
-                 <InAttribute()> ByVal pPrinterNotifyOptions As Int32 _
+                 <InAttribute()> ByVal pPrinterNotifyOptions As IntPtr _
                     ) As Microsoft.Win32.SafeHandles.SafeWaitHandle
 
     End Function
@@ -350,7 +317,7 @@ CallingConvention:=CallingConvention.StdCall)> _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumJobs _
-                (<InAttribute()> ByVal hPrinter As Int32, _
+                (<InAttribute()> ByVal hPrinter As IntPtr, _
                  <InAttribute()> ByVal FirstJob As Int32, _
                  <InAttribute()> ByVal NumberOfJobs As Int32, _
  <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As JobInfoLevels, _
@@ -370,10 +337,10 @@ CallingConvention:=CallingConvention.StdCall)> _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetJob _
-                    (<InAttribute()> ByVal hPrinter As Int32, _
+                    (<InAttribute()> ByVal hPrinter As IntPtr, _
                      <InAttribute()> ByVal dwJobId As Int32, _
                      <InAttribute()> ByVal Level As Int32, _
-                     <InAttribute()> ByVal lpJob As Int32, _
+                     <InAttribute()> ByVal lpJob As IntPtr, _
                      <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal dwCommand As PrintJobControlCommands _
                     ) As Boolean
 
@@ -384,7 +351,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetJob _
-                    (ByVal hPrinter As Int32, _
+                    (ByVal hPrinter As IntPtr, _
                      ByVal dwJobId As Int32, _
                      ByVal Level As Int32, _
                      <MarshalAs(UnmanagedType.LPStruct)> ByVal lpJob As JOB_INFO_1, _
@@ -398,7 +365,7 @@ CallingConvention:=CallingConvention.StdCall)> _
  ExactSpelling:=False, _
  CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetJob _
-                (ByVal hPrinter As Int32, _
+                (ByVal hPrinter As IntPtr, _
                  ByVal dwJobId As Int32, _
                  ByVal Level As Int32, _
                  <MarshalAs(UnmanagedType.LPStruct)> ByVal lpJob As JOB_INFO_2, _
@@ -445,7 +412,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      CallingConvention:=CallingConvention.StdCall)> _
     Public Function DocumentProperties _
         (<InAttribute()> ByVal hwnd As Int32, _
-         <InAttribute()> ByVal hPrinter As Int32, _
+         <InAttribute()> ByVal hPrinter As IntPtr, _
          <InAttribute()> ByVal pPrinterName As String, _
          <OutAttribute()> ByRef pDevModeOut As Int32, _
          <InAttribute()> ByVal pDevModeIn As Int32, _
@@ -618,7 +585,7 @@ CallingConvention:=CallingConvention.StdCall)> _
 SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
-    Public Function SetForm(<InAttribute()> ByVal PrinterHandle As Int32, _
+    Public Function SetForm(<InAttribute()> ByVal PrinterHandle As IntPtr, _
                              <InAttribute()> ByVal FormName As String, _
                              <InAttribute()> ByVal Level As Integer, _
                              <InAttribute()> ByRef pForm As FORM_INFO_1 _
@@ -633,7 +600,7 @@ SetLastError:=True, CharSet:=CharSet.Unicode, _
 ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumForms( _
-                      <InAttribute()> ByVal hPrinter As Int32, _
+                      <InAttribute()> ByVal hPrinter As IntPtr, _
                       <InAttribute()> ByVal Level As Int32, _
                       <OutAttribute()> ByVal pForm As Int32, _
                       <InAttribute()> ByVal cbBuf As Int32, _
@@ -648,23 +615,13 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As Int32, _
-                                 <OutAttribute()> ByVal pBuffer As Int32, _
+    Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As IntPtr, _
+                                 <OutAttribute()> ByVal pBuffer As IntPtr, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
 
     End Function
 
-    <DllImport("winspool.drv", EntryPoint:="ReadPrinter", _
- SetLastError:=True, CharSet:=CharSet.Unicode, _
- ExactSpelling:=False, _
- CallingConvention:=CallingConvention.StdCall)> _
-    Public Function ReadPrinter(<InAttribute()> ByVal hPrinter As Int32, _
-                             <OutAttribute()> ByVal pBuffer As Int64, _
-                             <InAttribute()> ByVal cbBuf As Int32, _
-                             <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
-
-    End Function
 #End Region
 
 #Region "WritePrinter"
@@ -672,8 +629,8 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function WritePrinter(<InAttribute()> ByVal hPrinter As Int32, _
-                                 <OutAttribute()> ByVal pBuffer As Int32, _
+    Public Function WritePrinter(<InAttribute()> ByVal hPrinter As IntPtr, _
+                                 <OutAttribute()> ByVal pBuffer As IntPtr, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32) As Boolean
 
@@ -685,7 +642,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function StartDocPrinter(<InAttribute()> ByVal hPrinter As Int32, _
+    Public Function StartDocPrinter(<InAttribute()> ByVal hPrinter As IntPtr, _
                                     <InAttribute()> ByVal Level As Int32, _
                                     <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal DocInfo As DOC_INFO_1) As Boolean
 
@@ -697,7 +654,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function EndDocPrinter(<InAttribute()> ByVal hPrinter As Int32) As Boolean
+    Public Function EndDocPrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolean
 
     End Function
 #End Region
@@ -707,7 +664,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function StartPagePrinter(<InAttribute()> ByVal hPrinter As Int32) As Boolean
+    Public Function StartPagePrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolean
 
     End Function
 #End Region
@@ -717,7 +674,7 @@ CallingConvention:=CallingConvention.StdCall)> _
      SetLastError:=True, CharSet:=CharSet.Unicode, _
      ExactSpelling:=False, _
      CallingConvention:=CallingConvention.StdCall)> _
-    Public Function EndPagePrinter(<InAttribute()> ByVal hPrinter As Int32) As Boolean
+    Public Function EndPagePrinter(<InAttribute()> ByVal hPrinter As IntPtr) As Boolean
 
     End Function
 #End Region

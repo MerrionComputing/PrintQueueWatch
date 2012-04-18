@@ -228,7 +228,7 @@ Namespace SpoolerApiConstantEnumerations
 
 #Region "PrinterAccessRights"
     <FlagsAttribute()> _
-    Public Enum PrinterAccessRights
+    Public Enum PrinterAccessRights As Int32
         ' READ_CONTROL - Allowed to read printer information
         READ_CONTROL = &H20000
         ' WRITE_DAC - Allowed to write device access control info

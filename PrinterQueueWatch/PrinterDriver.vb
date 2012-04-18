@@ -346,7 +346,7 @@ Public Class PrinterDriver
 #End Region
 
 #Region "Public constructors"
-    Friend Sub New(ByVal hPrinter As Int32)
+    Friend Sub New(ByVal hPrinter As IntPtr)
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & hPrinter.ToString & ")", Me.GetType.ToString)
         End If

@@ -46,19 +46,6 @@ Public Class PrinterMonitorComponent
     Public Shared ComponentTraceSwitch As New TraceSwitch("PrinterMonitorComponent", "Printer Monitor Component Tracing")
 #End Region
 
-#Region "Localisation"
-    ''' -----------------------------------------------------------------------------
-    ''' <summary>
-    ''' Provides multi-culture support for the component 
-    ''' </summary>
-    ''' <remarks>
-    ''' </remarks>
-    ''' <history>
-    ''' 	[Duncan]	19/11/2005	Created
-    ''' </history>
-    ''' -----------------------------------------------------------------------------
-    Public Shared ComponentLocalisationResourceManager As New Resources.ResourceManager("PrinterMonitorComponent", System.Reflection.Assembly.Load("PrinterQueueWatch.Resources"))
-#End Region
 
 #Region "Public enumerated types"
     ''' -----------------------------------------------------------------------------
@@ -90,7 +77,7 @@ Public Class PrinterMonitorComponent
 #Region "Private Member Variables"
 
     '\\ Printer handle - returned by the OpenPrinter API call
-    Private mhPrinter As Int32
+    Private mhPrinter As IntPtr
     Private msDeviceName As String
 
     '\\ A combination of PrinterChangeNotificationGeneralFlags that describe what to monitor
@@ -105,6 +92,9 @@ Public Class PrinterMonitorComponent
     Private _MonitoredPrinters As MonitoredPrinters
 
     Private _SpoolMonitoringDisabled As Boolean = False '\\ Switch off spool monitoring if a communications error occurs
+
+    Public Shared resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(PrinterMonitorComponent))
+
 #End Region
 
 #Region "Public events"
@@ -375,7 +365,7 @@ Public Class PrinterMonitorComponent
             If _MonitoredPrinters.Count > 0 Then
                 Return _MonitoredPrinters(0)
             Else
-                Throw New ArgumentException("No printers being monitored")
+                Return Nothing
             End If
         End Get
     End Property
@@ -409,7 +399,7 @@ Public Class PrinterMonitorComponent
     <Description("The number of jobs on the queued on the printer being monitored")> _
     Public ReadOnly Property JobCount() As Int32
         Get
-            If mhPrinter <> 0 Then
+            If mhPrinter.ToInt64 <> 0 Then
                 Return Me.PrinterInformation.JobCount
             Else
                 Return 0
@@ -632,6 +622,9 @@ Public Class PrinterMonitorComponent
                     End If
                 End Try
             End If
+            If Not (_MonitoredPrinters Is Nothing) Then
+                _MonitoredPrinters.Dispose()
+            End If
         End If
         MyBase.Dispose(disposing)
     End Sub
@@ -644,7 +637,7 @@ Public Class PrinterMonitorComponent
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        components = New System.ComponentModel.Container
+
     End Sub
 
 #End Region
@@ -877,11 +870,7 @@ Public Class PrinterMonitorComponent
 
 #End Region
 
-#Region "Finalize"
-    Protected Overrides Sub Finalize()
-        MyBase.Finalize()
-    End Sub
-#End Region
+
 
 #Region "Private methods"
 

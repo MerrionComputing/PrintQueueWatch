@@ -32,7 +32,7 @@ Public Class PrinterInformation
 
 #Region "Private member variables"
 
-    Private mhPrinter As Int32
+    Private mhPrinter As IntPtr
 
     '\\ PRINTER_INFO_ structures
     Private mPrinter_Info_2 As New PRINTER_INFO_2
@@ -67,9 +67,6 @@ Public Class PrinterInformation
 
 #Region "IDisposable implementation"
     Public Overloads Sub Dispose() Implements IDisposable.Dispose
-        If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
-            Trace.WriteLine("Dispose()", Me.GetType.ToString)
-        End If
         Dispose(True)
         GC.SuppressFinalize(Me)
     End Sub
@@ -1314,7 +1311,7 @@ Public Class PrinterInformation
         '\\ Do not attempt to pause and already paused printer
         If Not Paused Then
             Try
-                If Not SetPrinter(mhPrinter, 0, 0, PrinterControlCommands.PRINTER_CONTROL_PAUSE) Then
+                If Not SetPrinter(mhPrinter, 0, IntPtr.Zero, PrinterControlCommands.PRINTER_CONTROL_PAUSE) Then
                     Throw New Win32Exception()
                 End If
             Catch e As Win32Exception
@@ -1350,7 +1347,7 @@ Public Class PrinterInformation
         '\\ Do not attempt to resume if the printer is not paused
         If Paused Then
             Try
-                If Not SetPrinter(mhPrinter, 0, 0, PrinterControlCommands.PRINTER_CONTROL_RESUME) Then
+                If Not SetPrinter(mhPrinter, 0, IntPtr.Zero, PrinterControlCommands.PRINTER_CONTROL_RESUME) Then
                     Throw New Win32Exception()
                 End If
             Catch e As Win32Exception
@@ -1360,7 +1357,7 @@ Public Class PrinterInformation
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("SetPrinter (Resume) failed", Me.GetType.ToString)
                     End If
-                    Throw e
+                    Throw
                 End If
             End Try
         End If
@@ -1887,7 +1884,7 @@ Public Class PrinterInformation
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine(e.Message & " creating new PRINTER_INFO_2 for handle : " & mhPrinter.ToString, Me.GetType.ToString)
             End If
-            Throw e
+            Throw
             Exit Sub
         End Try
         If GetJobs Then
@@ -1897,12 +1894,12 @@ Public Class PrinterInformation
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine(e.Message & " creating new PRINTER_INFO_3 for handle : " & mhPrinter.ToString, Me.GetType.ToString)
                 End If
-                Throw e
+                Throw
             End Try
         End If
     End Sub
 
-    Friend Sub New(ByVal PrinterHandle As Int32)
+    Friend Sub New(ByVal PrinterHandle As IntPtr)
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & PrinterHandle.ToString & ")", Me.GetType.ToString)
         End If
@@ -1949,7 +1946,7 @@ Public Class PrinterInformation
     ''' </history>
     ''' -----------------------------------------------------------------------------
     Public Sub New(ByVal DeviceName As String, ByVal DesiredAccess As SpoolerApiConstantEnumerations.PrinterAccessRights, ByVal GetSecurityInfo As Boolean, ByVal GetJobs As Boolean)
-        Dim hPrinter As Integer = 0
+        Dim hPrinter As IntPtr = IntPtr.Zero
         If OpenPrinter(DeviceName, hPrinter, New PRINTER_DEFAULTS(DesiredAccess)) Then
             mhPrinter = hPrinter
             Call InitPrinterInfo(GetJobs)

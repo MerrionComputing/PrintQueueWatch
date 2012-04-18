@@ -54,7 +54,7 @@ Public Class PrintJob
 
 #Region "Private member variables"
 
-    Private mhPrinter As Int32
+    Private mhPrinter As IntPtr
     Private midJob As Int32
 
     Private bHandleOwnedByMe As Boolean
@@ -1369,22 +1369,22 @@ Public Class PrintJob
     Public Sub Cancel()
 
         If System.Environment.OSVersion.Version.Major < 4 Then   '\\ For systems less than windows NT 4...
-            If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
+            If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
                 End If
-                Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pjerr_cancel"), New Win32Exception)
+                Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.resources.GetString("pjerr_cancel"), New Win32Exception)
             Else
                 If PrintJob.TraceSwitch.TraceVerbose Then
                     Trace.WriteLine("SetJob (Cancel) succeeded", Me.GetType.ToString)
                 End If
             End If
         Else
-            If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
+            If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_CANCEL) Then
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
                 End If
-                Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pjerr_cancel"), New Win32Exception)
+                Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.resources.GetString("pjerr_cancel"), New Win32Exception)
             Else
                 If PrintJob.TraceSwitch.TraceVerbose Then
                     Trace.WriteLine("SetJob (Cancel) succeeded", Me.GetType.ToString)
@@ -1431,11 +1431,11 @@ Public Class PrintJob
     ''' -----------------------------------------------------------------------------
     Public Sub Delete()
 
-        If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_DELETE) Then
+        If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_DELETE) Then
             If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                 Trace.WriteLine("SetJob (Delete) failed", Me.GetType.ToString)
             End If
-            Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pjerr_delete"), New Win32Exception)
+            Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.resources.GetString("pjerr_delete"), New Win32Exception)
         Else
             If PrintJob.TraceSwitch.TraceVerbose Then
                 Trace.WriteLine("SetJob (Delete) succeeded", Me.GetType.ToString)
@@ -1468,7 +1468,7 @@ Public Class PrintJob
             If Not Value.Equals(Me.Paused) Then
                 '\\ The paused state has changed: Call the pause or resume command as appropriate
                 If Value Then
-                    If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_PAUSE) Then
+                    If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_PAUSE) Then
                         Throw New Win32Exception
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                             Trace.WriteLine("SetJob (Cancel) failed", Me.GetType.ToString)
@@ -1479,7 +1479,7 @@ Public Class PrintJob
                         End If
                     End If
                 Else
-                    If Not SetJob(mhPrinter, midJob, 0, 0, PrintJobControlCommands.JOB_CONTROL_RESUME) Then
+                    If Not SetJob(mhPrinter, midJob, 0, IntPtr.Zero, PrintJobControlCommands.JOB_CONTROL_RESUME) Then
                         Throw New Win32Exception
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                             Trace.WriteLine("SetJob (Resume) failed", Me.GetType.ToString)
@@ -1691,15 +1691,15 @@ Public Class PrintJob
             .OutputFilename = String.Empty
         End With
 
-        Dim phPrinter As Integer
+        Dim phPrinter As IntPtr
         Dim pDefault As New PRINTER_DEFAULTS(PrinterAccessRights.PRINTER_ACCESS_USE)
 
         If OpenPrinter(Me.UniquePrinterObject, phPrinter, pDefault) Then
-            If phPrinter <> 0 Then
+            If phPrinter.ToInt64 <> 0 Then
                 'Read this print job into a bit of memory....
-                Dim ptBuf As Int32
+                Dim ptBuf As IntPtr
                 Try
-                    ptBuf = CInt(Marshal.AllocHGlobal(Me.JobSize))
+                    ptBuf = Marshal.AllocHGlobal(Me.JobSize)
                 Catch exMem As OutOfMemoryException
                     Throw New PrintJobTransferException("Print job is too large", exMem)
                     Exit Sub
@@ -1715,7 +1715,7 @@ Public Class PrintJob
                 Dim DataFile As New PrinterDataFile(ptBuf, Me.DataType)
 
                 'Open the target printer
-                Dim phPrinterTarget As Integer
+                Dim phPrinterTarget As IntPtr
                 If OpenPrinter(NewPrinter, phPrinterTarget, pDefault) Then
                     'Start the new document
                     If StartDocPrinter(phPrinterTarget, 1, NewDoc) Then
@@ -1753,13 +1753,13 @@ Public Class PrintJob
 #End Region
 
 #Region "PrinterHandle"
-    Private ReadOnly Property PrinterHandle() As Int32
+    Private ReadOnly Property PrinterHandle() As IntPtr
         Get
             Dim pDef As New PrinterDefaults
 
             pDef.DesiredAccess = PrinterAccessRights.PRINTER_ACCESS_USE
 
-            If mhPrinter = 0 Then
+            If mhPrinter.ToInt64 = 0 Then
                 If Not OpenPrinter(PrinterName, mhPrinter, pDef) Then
                     Throw New Win32Exception
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
@@ -1832,7 +1832,7 @@ Public Class PrintJob
 #End Region
 
 #Region "Public constructor"
-    Friend Sub New(ByVal hPrinter As Int32, ByVal idJob As Int32)
+    Friend Sub New(ByVal hPrinter As IntPtr, ByVal idJob As Int32)
 
         If PrintJob.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & hPrinter.ToString & "," & idJob.ToString & ")", Me.GetType.ToString)
@@ -1858,7 +1858,7 @@ Public Class PrintJob
     ''' </history>
     ''' -----------------------------------------------------------------------------
     Public Sub New(ByVal DeviceName As String, ByVal idJob As Int32)
-        Dim hPrinter As Integer
+        Dim hPrinter As IntPtr
         bHandleOwnedByMe = True
         If OpenPrinter(DeviceName, hPrinter, 0) Then
             mhPrinter = hPrinter
@@ -1886,10 +1886,7 @@ Public Class PrintJob
     ''' 	[Duncan]	21/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    Public Overridable Overloads Sub Dispose() Implements IDisposable.Dispose
-        If PrintJob.TraceSwitch.TraceVerbose Then
-            Trace.WriteLine("Dispose()", Me.GetType.ToString)
-        End If
+    Public Overloads Sub Dispose() Implements IDisposable.Dispose
         Dispose(True)
         GC.SuppressFinalize(Me)
     End Sub
@@ -1970,7 +1967,7 @@ Public Class PrintJob
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("SetJob() failed", Me.GetType.ToString)
                     End If
-                    Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pjerr_update"), New Win32Exception)
+                    Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.resources.GetString("pjerr_update"), New Win32Exception)
                 Else
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
                         Trace.WriteLine("Job Info (2) saved ", Me.GetType.ToString)
@@ -1987,7 +1984,7 @@ Public Class PrintJob
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("SetJob() failed", Me.GetType.ToString)
                     End If
-                    Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.ComponentLocalisationResourceManager.GetString("pjerr_update"), New Win32Exception)
+                    Throw New InsufficentPrintJobAccessRightsException(PrinterMonitorComponent.resources.GetString("pjerr_update"), New Win32Exception)
                 Else
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
                         Trace.WriteLine("Job Info (1) saved ", Me.GetType.ToString)
@@ -2078,7 +2075,7 @@ Public Class PrintJobCollection
 
 #Region "Private member variables"
     Private bHandleOwnedByMe As Boolean
-    Private hPrinter As Int32
+    Private hPrinter As IntPtr
 #End Region
 
 #Region "JobPendingDeletion"
@@ -2104,7 +2101,7 @@ Public Class PrintJobCollection
 
 #Region "Public interface"
 
-    Friend ReadOnly Property AddOrGetById(ByVal dwJobId As Int32, ByVal mhPrinter As Int32) As PrintJob
+    Friend ReadOnly Property AddOrGetById(ByVal dwJobId As Int32, ByVal mhPrinter As IntPtr) As PrintJob
         Get
             Dim pjThis As PrintJob
             If Not ContainsJobId(dwJobId) Then
@@ -2176,7 +2173,7 @@ Public Class PrintJobCollection
 #End Region
 #Region "Public constructors"
 
-    Private Sub InitJobList(ByVal mhPrinter As Int32, ByVal JobCount As Int32)
+    Private Sub InitJobList(ByVal mhPrinter As IntPtr, ByVal JobCount As Int32)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
         Dim pJobInfo As Int32
@@ -2247,7 +2244,7 @@ Public Class PrintJobCollection
     ''' </history>
     ''' -----------------------------------------------------------------------------
     <Description("Creates a new list and fills it with all the jobs currently on a given printer's queue by printer handle")> _
-    Public Sub New(ByVal mhPrinter As Int32, ByVal JobCount As Int32)
+    Public Sub New(ByVal mhPrinter As IntPtr, ByVal JobCount As Int32)
 
         If PrintJob.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & mhPrinter.ToString & "," & JobCount.ToString & ")", Me.GetType.ToString)
@@ -2280,7 +2277,7 @@ Public Class PrintJobCollection
             Trace.WriteLine("New(" & DeviceName & "," & JobCount.ToString & ")", Me.GetType.ToString)
         End If
 
-        Dim hPrinter As Integer
+        Dim hPrinter As IntPtr
         bHandleOwnedByMe = True
         If OpenPrinter(DeviceName, hPrinter, 0) Then
             Call InitJobList(hPrinter, JobCount)
@@ -2514,8 +2511,8 @@ Public Class TimeWindow
     ''' -----------------------------------------------------------------------------
     Public Overrides Function ToString() As String
         Dim sOut As New System.Text.StringBuilder
-        If Not PrinterMonitorComponent.ComponentLocalisationResourceManager Is Nothing Then
-            With PrinterMonitorComponent.ComponentLocalisationResourceManager
+        If Not PrinterMonitorComponent.resources Is Nothing Then
+            With PrinterMonitorComponent.resources
                 '\\ Return the data in this TimeWindow class
                 sOut.Append(" ")
                 If Me.Unrestricted Then
@@ -2598,7 +2595,7 @@ Friend Class PrinterDataFile
 #End Region
 
 #Region "Private members"
-    Private _ptBuf As Int32
+    Private _ptBuf As IntPtr
     Private _DataType As String
 
     Private _TotalPages As Integer
@@ -2620,7 +2617,7 @@ Friend Class PrinterDataFile
 #End Region
 
 #Region "Public constructors"
-    Public Sub New(ByVal Buffer As Int32, ByVal DataType As String)
+    Public Sub New(ByVal Buffer As IntPtr, ByVal DataType As String)
         _ptBuf = Buffer
         _DataType = DataType
     End Sub

@@ -65,7 +65,7 @@ Public Class PrinterNotifyInfo
 
 #End Region
 
-    Public Sub New(ByVal mhPrinter As Int32, ByVal lpAddress As Int32, ByRef PrintJobs As PrintJobCollection)
+    Public Sub New(ByVal mhPrinter As IntPtr, ByVal lpAddress As Int32, ByRef PrintJobs As PrintJobCollection)
 
         If PrinterNotifyInfoData.TraceSwitch.TraceVerbose Then
             Trace.WriteLine("New(" & mhPrinter.ToString & "," & lpAddress.ToString & ")", Me.GetType.ToString)
