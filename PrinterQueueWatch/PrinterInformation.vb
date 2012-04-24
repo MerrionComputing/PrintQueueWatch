@@ -1279,7 +1279,7 @@ Public Class PrinterInformation
     ''' 	[Duncan]	20/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    Public ReadOnly Property SecurityDescriptorPointer() As Integer
+    Public ReadOnly Property SecurityDescriptorPointer() As IntPtr
         Get
             RefreshPrinterInformation(PrinterInfoLevels.PrinterInfoLevel3)
             Return mPrinter_Info_3.pSecurityDescriptor
@@ -1842,7 +1842,7 @@ Public Class PrinterInformation
         Select Case Level
             Case PrinterInfoLevels.PrinterInfoLevel2
                 If Not ModifySecurityDescriptor Then
-                    mPrinter_Info_2.lpSecurityDescriptor = 0
+                    mPrinter_Info_2.lpSecurityDescriptor = IntPtr.Zero
                 End If
                 Try
                     SetPrinter(mhPrinter, PrinterInfoLevels.PrinterInfoLevel2, mPrinter_Info_2, 0)

@@ -72,9 +72,9 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function GetPrinter _
             (<InAttribute()> ByVal hPrinter As IntPtr, _
              <InAttribute()> ByVal Level As Int32, _
-             <OutAttribute()> ByVal lpPrinter As Int32, _
+             <OutAttribute()> ByVal lpPrinter As IntPtr, _
              <InAttribute()> ByVal cbBuf As Int32, _
-             <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
+             <OutAttribute()> ByRef lpbSizeNeeded As IntPtr) As Boolean
 
     End Function
 #End Region
@@ -134,7 +134,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumPrinterDrivers(<InAttribute()> ByVal ServerName As String, _
                                        <InAttribute()> ByVal Environment As String, _
                                        <InAttribute()> ByVal Level As Int32, _
-                                       <OutAttribute()> ByVal lpBuf As Int32, _
+                                       <OutAttribute()> ByVal lpBuf As IntPtr, _
                                        <InAttribute()> ByVal cbBuf As Int32, _
                                        <OutAttribute()> ByRef pcbNeeded As Int32, _
                                        <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -203,7 +203,7 @@ CallingConvention:=CallingConvention.StdCall)> _
                  <InAttribute()> ByVal Level As Int32, _
                  <OutAttribute()> ByVal lpJob As IntPtr, _
                  <InAttribute()> ByVal cbBuf As Int32, _
-                 <OutAttribute()> ByRef lpbSizeNeeded As Int32) As Boolean
+                 <OutAttribute()> ByRef lpbSizeNeeded As IntPtr) As Boolean
 
     End Function
 
@@ -321,7 +321,7 @@ CallingConvention:=CallingConvention.StdCall)> _
                  <InAttribute()> ByVal FirstJob As Int32, _
                  <InAttribute()> ByVal NumberOfJobs As Int32, _
  <InAttribute(), MarshalAs(UnmanagedType.U4)> ByVal Level As JobInfoLevels, _
- <OutAttribute()> ByVal pbOut As Int32, _
+ <OutAttribute()> ByVal pbOut As IntPtr, _
  <InAttribute()> ByVal cbIn As Int32, _
  <OutAttribute()> ByRef pcbNeeded As Int32, _
  <OutAttribute()> ByRef pcReturned As Int32 _

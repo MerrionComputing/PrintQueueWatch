@@ -423,20 +423,20 @@ Public Class PrinterDriverCollection
     Public Sub New()
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
-        Dim pDriverInfo As Int32
+        Dim pDriverInfo As IntPtr
         Dim nItem As Integer
-        Dim pNextDriverInfo As Int32
+        Dim pNextDriverInfo As IntPtr
 
         If Not EnumPrinterDrivers(String.Empty, String.Empty, 3, pDriverInfo, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pDriverInfo = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pDriverInfo = Marshal.AllocHGlobal(pcbNeeded)
                 If EnumPrinterDrivers(String.Empty, String.Empty, 3, pDriverInfo, pcbNeeded, pcbNeeded, pcReturned) Then
                     If pcReturned > 0 Then
                         pNextDriverInfo = pDriverInfo
                         For nItem = 1 To pcReturned
                             Dim pdInfo3 As New DRIVER_INFO_3
                             '\\ Read the DRIVER_INFO_3 from the buffer
-                            Marshal.PtrToStructure(New IntPtr(pNextDriverInfo), pdInfo3)
+                            Marshal.PtrToStructure(pNextDriverInfo, pdInfo3)
                             '\\ Add this to the return list
                             Me.Add(New PrinterDriver(pdInfo3))
                             '\\ Move the buffer pointer on to the next DRIVER_INFO_3 structure
@@ -454,20 +454,20 @@ Public Class PrinterDriverCollection
 
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
-        Dim pDriverInfo As Int32
+        Dim pDriverInfo As IntPtr
         Dim nItem As Integer
-        Dim pNextDriverInfo As Int32
+        Dim pNextDriverInfo As IntPtr
 
         If Not EnumPrinterDrivers(Servername, String.Empty, 3, pDriverInfo, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pDriverInfo = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pDriverInfo = Marshal.AllocHGlobal(pcbNeeded)
                 If EnumPrinterDrivers(Servername, String.Empty, 3, pDriverInfo, pcbNeeded, pcbNeeded, pcReturned) Then
                     If pcReturned > 0 Then
                         pNextDriverInfo = pDriverInfo
                         For nItem = 1 To pcReturned
                             Dim pdInfo3 As New DRIVER_INFO_3
                             '\\ Read the DRIVER_INFO_3 from the buffer
-                            Marshal.PtrToStructure(New IntPtr(pNextDriverInfo), pdInfo3)
+                            Marshal.PtrToStructure(pNextDriverInfo, pdInfo3)
                             '\\ Add this to the return list
                             Me.Add(New PrinterDriver(pdInfo3))
                             '\\ Move the buffer pointer on to the next DRIVER_INFO_3 structure

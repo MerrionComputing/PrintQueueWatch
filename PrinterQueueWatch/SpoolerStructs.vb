@@ -57,24 +57,24 @@ Namespace SpoolerStructs
         Public Sub New(ByVal hPrinter As IntPtr, _
                      ByVal dwJobId As Int32)
 
-            Dim BytesWritten As Int32
+            Dim BytesWritten As IntPtr
             Dim ptBuf As IntPtr
 
             '\\ Get the required buffer size
             If Not GetJob(hPrinter, dwJobId, 1, ptBuf, 0, BytesWritten) Then
-                If BytesWritten = 0 Then
+                If BytesWritten.ToInt64 = 0 Then
                     Throw New Win32Exception
                     Exit Sub
                 End If
             End If
 
             '\\ Allocate a buffer the right size
-            If BytesWritten > 0 Then
+            If BytesWritten.ToInt64 > 0 Then
                 ptBuf = Marshal.AllocHGlobal(BytesWritten)
             End If
 
             '\\ Populate the JOB_INFO_1 structure
-            If Not GetJob(hPrinter, dwJobId, 1, ptBuf, BytesWritten, BytesWritten) Then
+            If Not GetJob(hPrinter, dwJobId, 1, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
                 Throw New Win32Exception
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("GetJob for JOB_INFO_1 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
@@ -85,12 +85,12 @@ Namespace SpoolerStructs
             End If
 
             '\\ Free the allocated memory
-            Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
+            Marshal.FreeHGlobal(ptBuf)
 
         End Sub
 
-        Public Sub New(ByVal lpJob As Int32)
-            Marshal.PtrToStructure(New IntPtr(lpJob), Me)
+        Public Sub New(ByVal lpJob As IntPtr)
+            Marshal.PtrToStructure(lpJob, Me)
         End Sub
 
     End Class
@@ -152,7 +152,7 @@ Namespace SpoolerStructs
         <MarshalAs(UnmanagedType.LPTStr)> Public pPrintProcessor As String
         <MarshalAs(UnmanagedType.LPTStr)> Public pParameters As String
         <MarshalAs(UnmanagedType.LPTStr)> Public pDriverName As String
-        <MarshalAs(UnmanagedType.U4)> Public LPDeviceMode As Int32
+        Public LPDeviceMode As IntPtr
         <MarshalAs(UnmanagedType.LPTStr)> Public pStatus As String
         Public lpSecurity As Int32
         <MarshalAs(UnmanagedType.U4)> Public Status As PrintJobStatuses
@@ -177,12 +177,12 @@ Namespace SpoolerStructs
         Public Sub New(ByVal hPrinter As IntPtr, _
                      ByVal dwJobId As Int32)
 
-            Dim BytesWritten As Int32
+            Dim BytesWritten As IntPtr
             Dim ptBuf As IntPtr
 
             '\\ Get the required buffer size
             If Not GetJob(hPrinter, dwJobId, 2, ptBuf, 0, BytesWritten) Then
-                If BytesWritten = 0 Then
+                If BytesWritten.ToInt64 = 0 Then
                     Throw New Win32Exception
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("GetJob for JOB_INFO_2 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
@@ -192,12 +192,12 @@ Namespace SpoolerStructs
             End If
 
             '\\ Allocate a buffer the right size
-            If BytesWritten > 0 Then
+            If BytesWritten.ToInt64 > 0 Then
                 ptBuf = Marshal.AllocHGlobal(BytesWritten)
             End If
 
             '\\ Populate the JOB_INFO_2 structure
-            If Not GetJob(hPrinter, dwJobId, 2, ptBuf, BytesWritten, BytesWritten) Then
+            If Not GetJob(hPrinter, dwJobId, 2, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
                 Throw New Win32Exception
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("GetJob for JOB_INFO_2 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
@@ -205,7 +205,7 @@ Namespace SpoolerStructs
             Else
                 Marshal.PtrToStructure(ptBuf, Me)
                 '\\ And get the DEVMODE before the memory is freed...
-                Marshal.PtrToStructure(New IntPtr(LPDeviceMode), dmOut)
+                Marshal.PtrToStructure(LPDeviceMode, dmOut)
             End If
             '\\ Free the allocated memory
             Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
@@ -283,18 +283,18 @@ Namespace SpoolerStructs
 #Region "Public constructors"
         Public Sub New(ByVal hPrinter As IntPtr)
 
-            Dim BytesWritten As Int32 = 0
-            Dim ptBuf As Integer
+            Dim BytesWritten As IntPtr
+            Dim ptBuf As IntPtr
 
-            ptBuf = CInt(Marshal.AllocHGlobal(1))
+            ptBuf = Marshal.AllocHGlobal(1)
 
             If Not GetPrinter(hPrinter, 1, ptBuf, 1, BytesWritten) Then
-                If BytesWritten > 0 Then
+                If BytesWritten.ToInt64 > 0 Then
                     '\\ Free the buffer allocated
-                    Marshal.FreeHGlobal(New IntPtr(ptBuf))
-                    ptBuf = CInt(Marshal.AllocHGlobal(BytesWritten))
-                    If GetPrinter(hPrinter, 1, ptBuf, BytesWritten, BytesWritten) Then
-                        Marshal.PtrToStructure(New IntPtr(ptBuf), Me)
+                    Marshal.FreeHGlobal(ptBuf)
+                    ptBuf = Marshal.AllocHGlobal(BytesWritten)
+                    If GetPrinter(hPrinter, 1, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
+                        Marshal.PtrToStructure(ptBuf, Me)
                     Else
 #If ERROR_BUBBLING Then
                         Throw New Win32Exception()
@@ -332,12 +332,12 @@ Namespace SpoolerStructs
         <MarshalAs(UnmanagedType.LPWStr)> Public pDriverName As String
         <MarshalAs(UnmanagedType.LPWStr)> Public pComment As String
         <MarshalAs(UnmanagedType.LPWStr)> Public pLocation As String
-        <MarshalAs(UnmanagedType.U4)> Public lpDeviceMode As Int32
+        Public lpDeviceMode As IntPtr
         <MarshalAs(UnmanagedType.LPWStr)> Public pSeperatorFilename As String
         <MarshalAs(UnmanagedType.LPWStr)> Public pPrintProcessor As String
         <MarshalAs(UnmanagedType.LPWStr)> Public pDataType As String
         <MarshalAs(UnmanagedType.LPWStr)> Public pParameters As String
-        <MarshalAs(UnmanagedType.U4)> Public lpSecurityDescriptor As Int32
+        Public lpSecurityDescriptor As IntPtr
         Public Attributes As Int32
         Public Priority As Int32
         Public DefaultPriority As Int32
@@ -354,25 +354,25 @@ Namespace SpoolerStructs
 #Region "Public constructors"
         Public Sub New(ByVal hPrinter As IntPtr)
 
-            Dim BytesWritten As Int32 = 0
-            Dim ptBuf As Integer
+            Dim BytesWritten As IntPtr = IntPtr.Zero
+            Dim ptBuf As IntPtr
 
-            ptBuf = CInt(Marshal.AllocHGlobal(1))
+            ptBuf = Marshal.AllocHGlobal(1)
 
             If Not GetPrinter(hPrinter, 2, ptBuf, 1, BytesWritten) Then
-                If BytesWritten > 0 Then
+                If BytesWritten.ToInt64 > 0 Then
                     '\\ Free the buffer allocated
                     Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
-                    ptBuf = CInt(Marshal.AllocHGlobal(BytesWritten))
-                    If GetPrinter(hPrinter, 2, ptBuf, BytesWritten, BytesWritten) Then
-                        Marshal.PtrToStructure(New IntPtr(ptBuf), Me)
+                    ptBuf = Marshal.AllocHGlobal(BytesWritten)
+                    If GetPrinter(hPrinter, 2, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
+                        Marshal.PtrToStructure(ptBuf, Me)
                         '\\ Fill any missing members
                         If pServerName Is Nothing Then
                             pServerName = ""
                         End If
                         '\\ If the devicemode is available, get it
-                        If lpDeviceMode > 0 Then
-                            Marshal.PtrToStructure(New IntPtr(lpDeviceMode), dmOut)
+                        If lpDeviceMode.ToInt64 > 0 Then
+                            Marshal.PtrToStructure(lpDeviceMode, dmOut)
                         End If
                     Else
 #If ERROR_BUBBLING Then
@@ -414,23 +414,23 @@ Namespace SpoolerStructs
 #Region "PRINTER_INFO_3 STRUCTURE"
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode), System.Security.SuppressUnmanagedCodeSecurity()> _
     Friend Class PRINTER_INFO_3
-        <MarshalAs(UnmanagedType.U4)> Public pSecurityDescriptor As Integer
+        Public pSecurityDescriptor As IntPtr
 
 #Region "Public constructors"
         Public Sub New(ByVal hPrinter As IntPtr)
 
-            Dim BytesWritten As Int32
-            Dim ptBuf As Int32
+            Dim BytesWritten As IntPtr
+            Dim ptBuf As IntPtr
 
-            ptBuf = CInt(Marshal.AllocHGlobal(1))
+            ptBuf = Marshal.AllocHGlobal(1)
 
             If Not GetPrinter(hPrinter, 3, ptBuf, 1, BytesWritten) Then
-                If BytesWritten > 0 Then
+                If BytesWritten.ToInt64 > 0 Then
                     '\\ Free the buffer allocated
                     Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
-                    ptBuf = CInt(Marshal.AllocHGlobal(BytesWritten))
-                    If GetPrinter(hPrinter, 3, ptBuf, BytesWritten, BytesWritten) Then
-                        Marshal.PtrToStructure(New IntPtr(ptBuf), Me)
+                    ptBuf = Marshal.AllocHGlobal(BytesWritten)
+                    If GetPrinter(hPrinter, 3, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
+                        Marshal.PtrToStructure(ptBuf, Me)
                     Else
                         Throw New Win32Exception
                     End If
@@ -470,7 +470,7 @@ Namespace SpoolerStructs
 #Region "PRINTER_NOTIFY_INFO_DATA_DATA"
     <StructLayout(LayoutKind.Sequential)> _
     Public Structure PRINTER_NOTIFY_INFO_DATA_DATA
-        Public cbBuf As UInt32
+        Public cbBuf As Int32
         Public pBuf As IntPtr
     End Structure
 #End Region

@@ -1740,7 +1740,7 @@ Public Class PrintJob
                 End If
 
                 'Free this buffer again
-                Marshal.FreeHGlobal(CType(ptBuf, IntPtr))
+                Marshal.FreeHGlobal(ptBuf)
             Else
                 Throw New InsufficentPrinterAccessRightsException("Could not read the print job")
             End If
@@ -2176,7 +2176,7 @@ Public Class PrintJobCollection
     Private Sub InitJobList(ByVal mhPrinter As IntPtr, ByVal JobCount As Int32)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
-        Dim pJobInfo As Int32
+        Dim pJobInfo As IntPtr
 
         '\\ Save the printer handle
         hPrinter = mhPrinter
@@ -2186,20 +2186,20 @@ Public Class PrintJobCollection
             JobCount = 255
         End If
 
-        If Not EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, 0, 0, pcbNeeded, pcReturned) Then
+        If Not EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, IntPtr.Zero, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pJobInfo = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pJobInfo = Marshal.AllocHGlobal(pcbNeeded)
                 Dim pcbProvided As Int32 = pcbNeeded
                 Dim pcbTotalNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
                 Dim pcTotalReturned As Int32 '\\ Holds the returned size of the output buffer (in bytes)
                 If EnumJobs(mhPrinter, 0, JobCount, JobInfoLevels.JobInfoLevel1, pJobInfo, pcbProvided, pcbTotalNeeded, pcTotalReturned) Then
                     If pcTotalReturned > 0 Then
                         Dim item As Int32
-                        Dim pnextJob As Int32 = pJobInfo
+                        Dim pnextJob As IntPtr = pJobInfo
                         For item = 0 To pcTotalReturned - 1
                             Dim jiTemp As New JOB_INFO_1(pnextJob)
                             Call Add(New PrintJob(mhPrinter, jiTemp.JobId))
-                            pnextJob = (pnextJob + 64)
+                            pnextJob = (pnextJob + Marshal.SizeOf(jiTemp))
                         Next
                     End If
                 Else
