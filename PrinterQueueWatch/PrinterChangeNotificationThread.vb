@@ -303,7 +303,7 @@ Friend Class PrinterChangeNotificationThread
     ''' <remarks></remarks>
     Private Sub DecodePrinterChangeInformation()
         Dim mpdChangeFlags As Integer
-        Dim mlpPrinter As Int32
+        Dim mlpPrinter As IntPtr
         Dim pInfo As PrinterNotifyInfo
         Dim piEventFlags As PrinterEventFlagDecoder
 
@@ -329,7 +329,7 @@ Friend Class PrinterChangeNotificationThread
                                                    mlpPrinter) Then
 
 
-                    If mlpPrinter <> 0 Then
+                    If mlpPrinter.ToInt64 <> 0 Then
                         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
                             Trace.WriteLine("FindNextPrinterChangeNotification returned a pointer to PRINTER_NOTIFY_INFO :" & mlpPrinter.ToString & " for printer handle: " & _PrinterHandle.ToString, Me.GetType.ToString)
                         End If
@@ -357,7 +357,7 @@ Friend Class PrinterChangeNotificationThread
                                 Throw New Win32Exception
                             Else
                                 _PrinterNotifyOptions.dwFlags = _PrinterNotifyOptions.dwFlags And (Not PRINTER_NOTIFY_OPTIONS_REFRESH)
-                                If mlpPrinter <> 0 Then
+                                If mlpPrinter.ToInt64 <> 0 Then
                                     pInfo = New PrinterNotifyInfo(_PrinterHandle, mlpPrinter, _PrinterInformation.PrintJobs)
                                 End If
                             End If

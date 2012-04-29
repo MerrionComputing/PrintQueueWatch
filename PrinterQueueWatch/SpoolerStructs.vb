@@ -509,7 +509,7 @@ Namespace SpoolerStructs
         Public Version As Int32
         Public Flags As Int32
         Public Count As Int32
-        Public NotifyData As PRINTER_NOTIFY_INFO_DATA_UNION
+        ' Public NotifyData As PRINTER_NOTIFY_INFO_DATA_UNION
     End Structure
 #End Region
 

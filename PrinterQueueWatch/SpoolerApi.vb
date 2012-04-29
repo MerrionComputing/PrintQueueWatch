@@ -263,7 +263,7 @@ CallingConvention:=CallingConvention.StdCall)> _
                             (<InAttribute()> ByVal hChangeObject As Int32, _
                              <OutAttribute()> ByRef pdwChange As Int32, _
                              <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions, _
-                             <OutAttribute()> ByRef lppPrinterNotifyInfo As Int32 _
+                             <OutAttribute()> ByRef lppPrinterNotifyInfo As IntPtr _
                                  ) As Boolean
     End Function
 
@@ -275,7 +275,7 @@ CallingConvention:=CallingConvention.StdCall)> _
                         (<InAttribute()> ByVal hChangeObject As Microsoft.Win32.SafeHandles.SafeWaitHandle, _
                          <OutAttribute()> ByRef pdwChange As Int32, _
                          <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions, _
-                         <OutAttribute()> ByRef lppPrinterNotifyInfo As Int32 _
+                         <OutAttribute()> ByRef lppPrinterNotifyInfo As IntPtr _
                              ) As Boolean
     End Function
 #End Region
@@ -286,7 +286,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function FreePrinterNotifyInfo _
-             (<InAttribute()> ByVal lppPrinterNotifyInfo As Int32) As Boolean
+             (<InAttribute()> ByVal lppPrinterNotifyInfo As IntPtr) As Boolean
 
     End Function
 #End Region
