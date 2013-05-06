@@ -302,7 +302,7 @@ Friend Class PrinterChangeNotificationThread
     ''' </summary>
     ''' <remarks></remarks>
     Private Sub DecodePrinterChangeInformation()
-        Dim mpdChangeFlags As Integer
+        Dim mpdChangeFlags As Int32
         Dim mlpPrinter As IntPtr
         Dim pInfo As PrinterNotifyInfo
         Dim piEventFlags As PrinterEventFlagDecoder
@@ -311,15 +311,14 @@ Friend Class PrinterChangeNotificationThread
             Exit Sub
         End If
 
+        If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+            Trace.WriteLine("DecodePrinterChangeInformation() for printer handle: " & _PrinterHandle.ToString, Me.GetType.ToString)
+        End If
+
+
         '\\ Prevent this code being re-entrant...
         SyncLock _NotificationLock
-            If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
-                Trace.WriteLine("DecodePrinterChangeInformation() for printer handle: " & _PrinterHandle.ToString, Me.GetType.ToString)
-            End If
-
-            If _WaitHandle Is Nothing OrElse _WaitHandle.SafeWaitHandle.IsClosed OrElse _WaitHandle.SafeWaitHandle.IsInvalid Then
-                Exit Sub
-            End If
+            
 
             '\\ A printer change notification has occured.....
             Try
@@ -335,6 +334,10 @@ Friend Class PrinterChangeNotificationThread
                         End If
 
                         pInfo = New PrinterNotifyInfo(_PrinterHandle, mlpPrinter, _PrinterInformation.PrintJobs)
+
+                        If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                            Trace.WriteLine("FindNextPrinterChangeNotification notify info " + pInfo.Flags.ToString())
+                        End If
 
                         piEventFlags = New PrinterEventFlagDecoder(pInfo.Flags)
 
@@ -370,6 +373,11 @@ Friend Class PrinterChangeNotificationThread
                         Dim thisJob As PrintJob
 
                         If piEventFlags.ChangesOccured Then
+
+                            If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                                Trace.WriteLine("piEventFlags set - changes have occured ")
+                            End If
+
                             For nIndex = 0 To pInfo.PrintJobs.Count - 1
                                 thisJob = _PrinterInformation.PrintJobs.ItemByJobId(CType(pInfo.PrintJobs(nIndex), Integer))
                                 If Not thisJob Is Nothing Then
