@@ -260,7 +260,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     ExactSpelling:=False, _
     CallingConvention:=CallingConvention.StdCall)> _
     Public Function FindNextPrinterChangeNotification _
-                            (<InAttribute()> ByVal hChangeObject As Int32, _
+                            (<InAttribute()> ByVal hChangeObject As IntPtr, _
                              <OutAttribute()> ByRef pdwChange As Int32, _
                              <InAttribute(), MarshalAs(UnmanagedType.LPStruct)> ByVal pPrinterNotifyOptions As PrinterNotifyOptions, _
                              <OutAttribute()> ByRef lppPrinterNotifyInfo As IntPtr _

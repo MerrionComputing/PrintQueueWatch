@@ -145,6 +145,14 @@ Public Class PrintJobEventArgs
         _Job.Dispose()
     End Sub
 
+
+    Public Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        If disposing Then
+            _Job.Dispose()
+        End If
+
+    End Sub
+
     Public Overloads Function Equals(ByVal PrintJobEventArgs As PrintJobEventArgs) As Boolean
         If Not PrintJobEventArgs Is Nothing Then
             If PrintJobEventArgs.EventType = _EventType AndAlso PrintJobEventArgs.PrintJob.JobId = _Job.JobId AndAlso PrintJobEventArgs.PrintJob.PrinterName = _Job.PrinterName Then

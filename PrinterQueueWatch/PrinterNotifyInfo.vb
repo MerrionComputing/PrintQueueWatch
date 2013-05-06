@@ -87,6 +87,12 @@ Public Class PrinterNotifyInfo
                 Dim itemdata As New PrinterNotifyInfoData(lOffset)
                 If itemdata.Type = Printer_Notification_Types.JOB_NOTIFY_TYPE Then
 
+                    If itemdata.dwId = 0 Then
+                        If PrinterMonitorComponent.ComponentTraceSwitch.TraceWarning Then
+                            Trace.WriteLine("JOB_NOTIFY_TYPE has zero job id ")
+                        End If
+                    End If
+
                     Dim pjThis As PrintJob
                     '\\ If this job is not on the printer job list, add it...
                     pjThis = PrintJobs.AddOrGetById(itemdata.dwId, mhPrinter)

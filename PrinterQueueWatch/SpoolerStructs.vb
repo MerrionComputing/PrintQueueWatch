@@ -60,9 +60,18 @@ Namespace SpoolerStructs
             Dim BytesWritten As IntPtr
             Dim ptBuf As IntPtr
 
+
+            If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                Trace.WriteLine("JOB_INFO_1 new(" + hPrinter.ToString() + "," + dwJobId.ToString() + ")")
+            End If
+
+
             '\\ Get the required buffer size
             If Not GetJob(hPrinter, dwJobId, 1, ptBuf, 0, BytesWritten) Then
                 If BytesWritten.ToInt64 = 0 Then
+                    If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
+                        Trace.WriteLine("GetJob for JOB_INFO_1 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
+                    End If
                     Throw New Win32Exception
                     Exit Sub
                 End If
@@ -75,10 +84,10 @@ Namespace SpoolerStructs
 
             '\\ Populate the JOB_INFO_1 structure
             If Not GetJob(hPrinter, dwJobId, 1, ptBuf, BytesWritten.ToInt32, BytesWritten) Then
-                Throw New Win32Exception
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("GetJob for JOB_INFO_1 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
                 End If
+                Throw New Win32Exception
                 Exit Sub
             Else
                 Marshal.PtrToStructure(ptBuf, Me)
@@ -91,6 +100,11 @@ Namespace SpoolerStructs
 
         Public Sub New(ByVal lpJob As IntPtr)
             Marshal.PtrToStructure(lpJob, Me)
+
+            If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                Trace.WriteLine("JOB_INFO_1 new(" + lpJob.ToString() + ")")
+            End If
+
         End Sub
 
     End Class
@@ -154,7 +168,7 @@ Namespace SpoolerStructs
         <MarshalAs(UnmanagedType.LPTStr)> Public pDriverName As String
         Public LPDeviceMode As IntPtr
         <MarshalAs(UnmanagedType.LPTStr)> Public pStatus As String
-        Public lpSecurity As Int32
+        Public lpSecurity As IntPtr
         <MarshalAs(UnmanagedType.U4)> Public Status As PrintJobStatuses
         Public Priority As Int32
         Public Position As Int32
@@ -180,13 +194,17 @@ Namespace SpoolerStructs
             Dim BytesWritten As IntPtr
             Dim ptBuf As IntPtr
 
+            If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
+                Trace.WriteLine("JOB_INFO_1 new(" + hPrinter.ToString() + "," + dwJobId.ToString() + ")")
+            End If
+
             '\\ Get the required buffer size
             If Not GetJob(hPrinter, dwJobId, 2, ptBuf, 0, BytesWritten) Then
                 If BytesWritten.ToInt64 = 0 Then
-                    Throw New Win32Exception
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("GetJob for JOB_INFO_2 failed on handle: " & hPrinter.ToString & " for job: " & dwJobId, Me.GetType.ToString)
                     End If
+                    Throw New Win32Exception
                     Exit Sub
                 End If
             End If
@@ -505,12 +523,11 @@ Namespace SpoolerStructs
 
 #Region "PRINTER_NOTIFY_INFO STRUCTURE"
     <StructLayout(LayoutKind.Sequential)> _
-    Friend Structure PRINTER_NOTIFY_INFO
+    Public Class PRINTER_NOTIFY_INFO
         Public Version As Int32
         Public Flags As Int32
         Public Count As Int32
-        ' Public NotifyData As PRINTER_NOTIFY_INFO_DATA_UNION
-    End Structure
+    End Class
 #End Region
 
 #Region "DRIVER_INFO_2"
@@ -668,9 +685,9 @@ Namespace SpoolerStructs
 #Region "PORT_INFO_3"
     <StructLayout(LayoutKind.Sequential)> _
     Friend Class PORT_INFO_3
-        <MarshalAs(UnmanagedType.U4)> Public dwStatus As Long
+        <MarshalAs(UnmanagedType.U4)> Public dwStatus As Int32
         <MarshalAs(UnmanagedType.LPWStr)> Public pszStatus As String
-        <MarshalAs(UnmanagedType.U4)> Public dwSeverity As Long
+        <MarshalAs(UnmanagedType.U4)> Public dwSeverity As Int32
 
     End Class
 #End Region

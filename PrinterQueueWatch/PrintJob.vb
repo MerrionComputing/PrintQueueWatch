@@ -1330,6 +1330,41 @@ Public Class PrintJob
     End Property
 #End Region
 
+#Region "Duplex"
+    ''' -----------------------------------------------------------------------------
+    ''' <summary>
+    ''' True if the print job is to be printed in colour
+    ''' </summary>
+    ''' <value></value>
+    ''' <remarks>
+    ''' This will be true if the setting is set to rpint in colour even if
+    ''' the actual document has no colour elements 
+    ''' </remarks>
+    ''' <example>Prints the colour / monochrome setting of each job as it is added to the monitored printers
+    ''' <code>
+    '''   Private WithEvents pmon As New PrinterMonitorComponent
+    '''
+    '''   pmon.AddPrinter("Microsoft Office Document Image Writer")
+    '''   pmon.AddPrinter("HP Laserjet 5")
+    ''' 
+    '''    Private Sub pmon_JobAdded(ByVal sender As Object, ByVal e As System.EventArgs) Handles pmon.JobAdded
+    '''
+    '''    With CType(e, PrintJobEventArgs)
+    '''        Trace.WriteLine(Iif(.PrintJob.Duplex,"Duplex", "Simplex"))
+    '''     End With
+    '''
+    '''  End Sub
+    ''' </code>
+    ''' </example>
+    ''' -----------------------------------------------------------------------------
+    Public Overridable ReadOnly Property Duplex() As Boolean
+        Get
+            Call RefreshJobInfo(JobInfoLevels.JobInfoLevel2, False)
+            Return Not (ji2.DeviceMode.dmDuplex = DeviceDuplexSettings.DMDUP_SIMPLEX)
+        End Get
+    End Property
+#End Region
+
 #End Region
 
 #Region "Cancel"

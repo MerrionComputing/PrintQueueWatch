@@ -1186,7 +1186,11 @@ Friend Class PrinterEventFlagDecoder
 #End Region
 
 #Region "Public constructor"
-    Public Sub New(ByVal flags As Int32)
+    Public Sub New(ByVal flags As IntPtr)
+        mflags = flags.ToInt32
+    End Sub
+
+    Public Sub New(ByVal flags As Integer)
         mflags = flags
     End Sub
 #End Region
