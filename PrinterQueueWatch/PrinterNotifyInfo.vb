@@ -11,7 +11,7 @@ Imports PrinterQueueWatch.SpoolerStructs
 Imports PrinterQueueWatch.SpoolerApiConstantEnumerations
 
 <StructLayout(LayoutKind.Sequential)> _
-Public Class PrinterNotifyInfoData
+Class PrinterNotifyInfoData
     Public wType As Int16
     Public wField As Int16
     Public dwReserved As Int32
@@ -41,7 +41,7 @@ Public Class PrinterNotifyInfoData
     End Property
 
     Public Overrides Function ToString() As String
-        Return Marshal.PtrToStringAnsi(CType(pBuff, IntPtr))
+        Return Marshal.PtrToStringAnsi(pBuff)
     End Function
 
     Public Function ToInt32() As Int32
@@ -55,7 +55,7 @@ Public Class PrinterNotifyInfoData
 End Class
 
 <StructLayout(LayoutKind.Sequential)> _
-Public Class PrinterNotifyInfo
+Class PrinterNotifyInfo
 
 #Region "Private member variables"
 

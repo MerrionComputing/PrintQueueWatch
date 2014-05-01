@@ -184,20 +184,21 @@ Public Class PrintProvidorCollection
     ''' </remarks>
     ''' <history>
     ''' 	[Duncan]	21/11/2005	Created
+    '''     [Duncan]    01/05/2014  Use IntPtr for 32/64 bit compatibility
     ''' </history>
     ''' -----------------------------------------------------------------------------
     Public Sub New()
         '\\ Return all the print providors visible from this machine
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pProvidors As Int32
+        Dim pProvidors As IntPtr
         Dim pcbProvided As Int32
 
         ' If Not EnumPrinters(0,string.Empty  1, 0, 0, pcbNeeded, pcReturned) Then
         If Not EnumPrinters(PrinterQueueWatch.SpoolerApiConstantEnumerations.EnumPrinterFlags.PRINTER_ENUM_NAME, 0, 1, pProvidors, 0, pcbNeeded, pcReturned) Then
             '\\ Allocate the required buffer to get all the monitors into...
             If pcbNeeded > 0 Then
-                pProvidors = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pProvidors = Marshal.AllocHGlobal(pcbNeeded)
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(PrinterQueueWatch.SpoolerApiConstantEnumerations.EnumPrinterFlags.PRINTER_ENUM_NAME, 0, 1, pProvidors, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -207,10 +208,10 @@ Public Class PrintProvidorCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As Int32 = pProvidors
+            Dim ptNext As IntPtr = pProvidors
             While pcReturned > 0
                 Dim pi1 As New PRINTER_INFO_1
-                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
+                Marshal.PtrToStructure(ptNext, pi1)
                 Me.Add(New PrintProvidor(pi1.pName, pi1.pDescription, pi1.pComment, pi1.Flags))
                 ptNext = ptNext + Marshal.SizeOf(pi1)
                 pcReturned -= 1
@@ -218,8 +219,8 @@ Public Class PrintProvidorCollection
         End If
 
         '\\ Free the allocated buffer memory
-        If pProvidors > 0 Then
-            Marshal.FreeHGlobal(CType(pProvidors, IntPtr))
+        If pProvidors.ToInt64 > 0 Then
+            Marshal.FreeHGlobal(pProvidors)
         End If
 
     End Sub

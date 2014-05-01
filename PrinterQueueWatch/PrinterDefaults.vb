@@ -1,8 +1,8 @@
 Imports System.Runtime.InteropServices
 Imports PrinterQueueWatch.SpoolerApiConstantEnumerations
 
-<StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)> _
-Friend Class PrinterDefaults
+<StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+Class PrinterDefaults
 
 #Region "Public interface"
 

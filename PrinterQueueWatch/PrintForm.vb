@@ -230,6 +230,7 @@ End Class
 ''' <seealso cref="PrinterQueueWatch.PrinterInformation.PrinterForms" />
 ''' <history>
 ''' 	[Duncan]	19/11/2005	Created
+'''     [Duncan]    01/05/2014  Use IntPtr for 32/64 bit compatibility
 ''' </history>
 ''' -----------------------------------------------------------------------------
 <System.Runtime.InteropServices.ComVisible(False)> _
@@ -256,14 +257,14 @@ Public Class PrinterFormCollection
 
     Friend Sub New(ByVal hPrinter As IntPtr)
 
-        Dim pForm As Int32
+        Dim pForm As IntPtr
         Dim pcbNeeded As Int32
         Dim pcFormsReturned As Int32
         Dim pcbProvided As Int32
 
         If Not EnumForms(hPrinter, 1, pForm, 0, pcbNeeded, pcFormsReturned) Then
             If pcbNeeded > 0 Then
-                pForm = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pForm = Marshal.AllocHGlobal(pcbNeeded)
                 pcbProvided = pcbNeeded
                 If Not EnumForms(hPrinter, 1, pForm, pcbProvided, pcbNeeded, pcFormsReturned) Then
                     Throw New Win32Exception
@@ -273,10 +274,10 @@ Public Class PrinterFormCollection
 
         If pcFormsReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As Int32 = pForm
+            Dim ptNext As IntPtr = pForm
             While pcFormsReturned > 0
                 Dim fi1 As New FORM_INFO_1
-                Marshal.PtrToStructure(New IntPtr(ptNext), fi1)
+                Marshal.PtrToStructure(ptNext, fi1)
                 Me.Add(New PrinterForm(hPrinter, fi1.Flags, fi1.Name, fi1.Width, fi1.Height, fi1.Left, fi1.Top, fi1.Right, fi1.Bottom))
                 ptNext = ptNext + Marshal.SizeOf(fi1)
                 pcFormsReturned -= 1
@@ -284,8 +285,8 @@ Public Class PrinterFormCollection
         End If
 
         '\\ Free the allocated buffer memory
-        If pForm > 0 Then
-            Marshal.FreeHGlobal(CType(pForm, IntPtr))
+        If pForm.ToInt64 > 0 Then
+            Marshal.FreeHGlobal(pForm)
         End If
 
     End Sub

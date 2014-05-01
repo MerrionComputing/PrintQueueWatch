@@ -1930,7 +1930,6 @@ Public Class PrintJob
         If disposing Then
             If bHandleOwnedByMe Then
                 If Not ClosePrinter(mhPrinter) Then
-                    Throw New Win32Exception
                     If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                         Trace.WriteLine("Error in PrinterInformation:Dispose")
                     End If
@@ -2125,7 +2124,6 @@ Public Class PrintJobCollection
         MyBase.Finalize()
         If bHandleOwnedByMe Then
             If Not ClosePrinter(hPrinter) Then
-                Throw New Win32Exception()
                 If PrinterMonitorComponent.ComponentTraceSwitch.TraceError Then
                     Trace.WriteLine("Error in PrinterInformation:Dispose")
                 End If

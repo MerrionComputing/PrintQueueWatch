@@ -9,7 +9,7 @@ Imports PrinterQueueWatch.SpoolerApiConstantEnumerations
 '\\     http://www.merrioncomputing.com
 '\\------------------------------------------------------------------------------
 <StructLayout(LayoutKind.Sequential)> _
-Public Class PrinterNotifyOptionsType
+Class PrinterNotifyOptionsType
     Implements IDisposable
 
     Public wJobType As Int16
@@ -164,7 +164,7 @@ End Class
 '\\     http://www.merrioncomputing.com
 '\\------------------------------------------------------------------------------
 <StructLayout(LayoutKind.Sequential)> _
-Public Class PrinterNotifyOptions
+Class PrinterNotifyOptions
     Implements IDisposable
 
     Public dwVersion As Int32

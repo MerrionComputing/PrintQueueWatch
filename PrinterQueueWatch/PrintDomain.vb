@@ -172,13 +172,13 @@ Public Class PrintDomainCollection
         '\\ Return all the print providors visible from this machine
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pDomains As Int32
+        Dim pDomains As IntPtr
         Dim pcbProvided As Int32
 
         If Not EnumPrinters(PrinterQueueWatch.SpoolerApiConstantEnumerations.EnumPrinterFlags.PRINTER_ENUM_NAME, ProvidorName, 1, pDomains, 0, pcbNeeded, pcReturned) Then
             '\\ Allocate the required buffer to get all the monitors into...
             If pcbNeeded > 0 Then
-                pDomains = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pDomains = Marshal.AllocHGlobal(pcbNeeded)
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(PrinterQueueWatch.SpoolerApiConstantEnumerations.EnumPrinterFlags.PRINTER_ENUM_NAME, ProvidorName, 1, pDomains, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -188,10 +188,10 @@ Public Class PrintDomainCollection
 
         If pcReturned > 0 Then
             '\\ Get all the domains for the given print providor
-            Dim ptNext As Int32 = pDomains
+            Dim ptNext As IntPtr = pDomains
             While pcReturned > 0
                 Dim pi1 As New PRINTER_INFO_1
-                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
+                Marshal.PtrToStructure(ptNext, pi1)
                 Me.Add(New PrintDomain(ProvidorName, pi1.pName, pi1.pDescription, pi1.pComment, pi1.Flags))
                 ptNext = ptNext + Marshal.SizeOf(pi1)
                 pcReturned -= 1
@@ -199,8 +199,8 @@ Public Class PrintDomainCollection
         End If
 
         '\\ Free the allocated buffer memory
-        If pDomains > 0 Then
-            Marshal.FreeHGlobal(CType(pDomains, IntPtr))
+        If pDomains.ToInt64 > 0 Then
+            Marshal.FreeHGlobal(pDomains)
         End If
 
     End Sub

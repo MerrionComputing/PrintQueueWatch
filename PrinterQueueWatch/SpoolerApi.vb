@@ -9,7 +9,7 @@ Imports Microsoft.VisualBasic
 Imports PrinterQueueWatch.SpoolerStructs
 Imports PrinterQueueWatch.SpoolerApiConstantEnumerations
 
-Module SpoolerApi
+Module UnsafeNativeMethods
     ' -- Notes: -------------------------------------------------------------------------------
     ' Always use <InAttribute()> and <OutAttribute()> to cut down on unnecessary marshalling
     ' -----------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
                                  <InAttribute()> ByVal Name As String, _
                                  <InAttribute()> ByVal Level As Int32, _
-                                 <OutAttribute()> ByVal lpBuf As Int32, _
+                                 <OutAttribute()> ByVal lpBuf As IntPtr, _
                                  <InAttribute()> ByVal cbBuf As Int32, _
                                  <OutAttribute()> ByRef pcbNeeded As Int32, _
                                  <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -101,7 +101,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumPrinters(<InAttribute()> ByVal Flags As EnumPrinterFlags, _
                              <InAttribute()> ByVal Name As Int32, _
                              <InAttribute()> ByVal Level As Int32, _
-                             <OutAttribute()> ByVal lpBuf As Int32, _
+                             <OutAttribute()> ByVal lpBuf As IntPtr, _
                              <InAttribute()> ByVal cbBuf As Int32, _
                              <OutAttribute()> ByRef pcbNeeded As Int32, _
                              <OutAttribute()> ByRef pcbReturned As Int32) As Boolean
@@ -570,7 +570,7 @@ ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function GetForm(<InAttribute()> ByVal PrinterHandle As Int32, _
                              <InAttribute()> ByVal FormName As String, _
-                             <InAttribute()> ByVal Level As Integer, _
+                             <InAttribute()> ByVal Level As Int32, _
                              <OutAttribute()> ByRef pForm As FORM_INFO_1, _
                              <InAttribute()> ByVal cbBuf As Int32, _
                              <OutAttribute()> ByRef pcbNeeded As Int32 _
@@ -587,7 +587,7 @@ ExactSpelling:=False, _
 CallingConvention:=CallingConvention.StdCall)> _
     Public Function SetForm(<InAttribute()> ByVal PrinterHandle As IntPtr, _
                              <InAttribute()> ByVal FormName As String, _
-                             <InAttribute()> ByVal Level As Integer, _
+                             <InAttribute()> ByVal Level As Int32, _
                              <InAttribute()> ByRef pForm As FORM_INFO_1 _
                           ) As Boolean
 
@@ -602,7 +602,7 @@ CallingConvention:=CallingConvention.StdCall)> _
     Public Function EnumForms( _
                       <InAttribute()> ByVal hPrinter As IntPtr, _
                       <InAttribute()> ByVal Level As Int32, _
-                      <OutAttribute()> ByVal pForm As Int32, _
+                      <OutAttribute()> ByVal pForm As IntPtr, _
                       <InAttribute()> ByVal cbBuf As Int32, _
                       <OutAttribute()> ByRef pcbNeeded As Int32, _
                       <OutAttribute()> ByRef pcFormsReturned As Int32) As Boolean

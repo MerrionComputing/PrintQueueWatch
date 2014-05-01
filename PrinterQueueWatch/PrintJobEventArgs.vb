@@ -141,12 +141,13 @@ Public Class PrintJobEventArgs
     ''' 	[Duncan]	21/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    Public Overridable Overloads Sub Dispose() Implements IDisposable.Dispose
-        _Job.Dispose()
+    Public Overloads Sub Dispose() Implements IDisposable.Dispose
+        Dispose(True)
+        GC.SuppressFinalize(Me)
     End Sub
 
 
-    Public Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+    Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
         If disposing Then
             _Job.Dispose()
         End If

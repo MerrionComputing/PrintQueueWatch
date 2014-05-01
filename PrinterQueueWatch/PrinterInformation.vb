@@ -35,8 +35,8 @@ Public Class PrinterInformation
     Private mhPrinter As IntPtr
 
     '\\ PRINTER_INFO_ structures
-    Private mPrinter_Info_2 As New PRINTER_INFO_2
-    Private mPrinter_Info_3 As New PRINTER_INFO_3
+    Private mPrinter_Info_2 As PRINTER_INFO_2
+    Private mPrinter_Info_3 As PRINTER_INFO_3
 
     Private bHandleOwnedByMe As Boolean
 
@@ -1282,7 +1282,11 @@ Public Class PrinterInformation
     Public ReadOnly Property SecurityDescriptorPointer() As IntPtr
         Get
             RefreshPrinterInformation(PrinterInfoLevels.PrinterInfoLevel3)
-            Return mPrinter_Info_3.pSecurityDescriptor
+            If (mPrinter_Info_3 IsNot Nothing) Then
+                Return mPrinter_Info_3.pSecurityDescriptor
+            Else
+                Return IntPtr.Zero
+            End If
         End Get
     End Property
 #End Region
@@ -2079,12 +2083,12 @@ Public Class PrinterInformationCollection
     Public Sub New()
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrinters As Int32
+        Dim pPrinters As IntPtr
         Dim pcbProvided As Int32 = 0
 
         If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, String.Empty, 1, pPrinters, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pPrinters = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pPrinters = Marshal.AllocHGlobal(pcbNeeded)
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, String.Empty, 1, pPrinters, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -2094,10 +2098,10 @@ Public Class PrinterInformationCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As Int32 = pPrinters
+            Dim ptNext As IntPtr = pPrinters
             While pcReturned > 0
                 Dim pi1 As New PRINTER_INFO_1
-                Marshal.PtrToStructure(New IntPtr(ptNext), pi1)
+                Marshal.PtrToStructure(ptNext, pi1)
                 If Not pi1.pName Is Nothing Then
                     Me.Add(New PrinterInformation(pi1.pName, PrinterAccessRights.PRINTER_ACCESS_USE, False)) ', pi2.pLocation, pi2.pComment, pi2.pServerName, 1))
                 End If
@@ -2107,8 +2111,8 @@ Public Class PrinterInformationCollection
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrinters > 0 Then
-            Marshal.FreeHGlobal(CType(pPrinters, IntPtr))
+        If pPrinters.ToInt64 > 0 Then
+            Marshal.FreeHGlobal(pPrinters)
         End If
 
     End Sub
@@ -2122,17 +2126,18 @@ Public Class PrinterInformationCollection
     ''' </remarks>
     ''' <history>
     ''' 	[Duncan]	20/11/2005	Created
+    '''     [Duncan]    01/05/2014  Use IntPtr for 32/64 bit compatibility
     ''' </history>
     ''' -----------------------------------------------------------------------------
     Public Sub New(ByVal Servername As String)
         Dim pcbNeeded As Int32 '\\ Holds the requires size of the output buffer (in bytes)
         Dim pcReturned As Int32 '\\ Holds the returned size of the output buffer 
-        Dim pPrinters As Int32
+        Dim pPrinters As IntPtr
         Dim pcbProvided As Int32 = 0
 
         If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, Servername, 1, pPrinters, 0, pcbNeeded, pcReturned) Then
             If pcbNeeded > 0 Then
-                pPrinters = CInt(Marshal.AllocHGlobal(pcbNeeded))
+                pPrinters = Marshal.AllocHGlobal(pcbNeeded)
                 pcbProvided = pcbNeeded
                 If Not EnumPrinters(EnumPrinterFlags.PRINTER_ENUM_NAME, Servername, 1, pPrinters, pcbProvided, pcbNeeded, pcReturned) Then
                     Throw New Win32Exception
@@ -2142,10 +2147,10 @@ Public Class PrinterInformationCollection
 
         If pcReturned > 0 Then
             '\\ Get all the monitors for the given server
-            Dim ptNext As Int32 = pPrinters
+            Dim ptNext As IntPtr = pPrinters
             While pcReturned > 0
                 Dim pi2 As New PRINTER_INFO_2
-                Marshal.PtrToStructure(New IntPtr(ptNext), pi2)
+                Marshal.PtrToStructure(ptNext, pi2)
                 Me.Add(New PrinterInformation(pi2.pPrinterName, pi2.pLocation, pi2.pComment, pi2.pServerName, 1))
                 ptNext = ptNext + Marshal.SizeOf(pi2) - Marshal.SizeOf(GetType(Int32))
                 pcReturned -= 1
@@ -2153,8 +2158,8 @@ Public Class PrinterInformationCollection
         End If
 
         '\\ Free the allocated buffer memory
-        If pPrinters > 0 Then
-            Marshal.FreeHGlobal(CType(pPrinters, IntPtr))
+        If pPrinters.ToInt64 > 0 Then
+            Marshal.FreeHGlobal(pPrinters)
         End If
 
     End Sub

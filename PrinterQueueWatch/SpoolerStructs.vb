@@ -475,7 +475,7 @@ Namespace SpoolerStructs
 
 #Region "PRINTER_NOTIFY_OPTIONS_TYPE STRUCTURE"
     <StructLayout(LayoutKind.Sequential)> _
-    Public Structure PRINTER_NOTIFY_OPTIONS_TYPE
+    Structure PRINTER_NOTIFY_OPTIONS_TYPE
         Public wType As Int16
         Public wReserved0 As Int16
         Public dwReserved1 As Int32
@@ -487,7 +487,7 @@ Namespace SpoolerStructs
 
 #Region "PRINTER_NOTIFY_INFO_DATA_DATA"
     <StructLayout(LayoutKind.Sequential)> _
-    Public Structure PRINTER_NOTIFY_INFO_DATA_DATA
+    Structure PRINTER_NOTIFY_INFO_DATA_DATA
         Public cbBuf As Int32
         Public pBuf As IntPtr
     End Structure
@@ -495,7 +495,7 @@ Namespace SpoolerStructs
 
 #Region "PRINTER_NOTIFY_INFO_DATA_UNION"
     <StructLayout(LayoutKind.Explicit)> _
-    Public Structure PRINTER_NOTIFY_INFO_DATA_UNION
+    Structure PRINTER_NOTIFY_INFO_DATA_UNION
         <FieldOffset(0)> _
         Private adwData0 As UInt32
         <FieldOffset(4)> _

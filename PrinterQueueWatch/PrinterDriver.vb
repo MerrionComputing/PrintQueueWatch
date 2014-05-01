@@ -85,7 +85,7 @@ Public Class PrinterDriver
         di2.pEnvironment = Environment
 
         '\\ Call the AddPrinterDriver API call
-        If SpoolerApi.AddPrinterDriver(Servername, 2, di2) Then
+        If UnsafeNativeMethods.AddPrinterDriver(Servername, 2, di2) Then
             Return New PrinterDriver(di2)
         Else
             Throw New Win32Exception
@@ -147,12 +147,12 @@ Public Class PrinterDriver
         Dim DriverDirectory As String = ""
         Dim BytesNeeded As Integer
 
-        If SpoolerApi.GetPrinterDriverDirectory(Servername, Environment, 1, DriverDirectory, DriverDirectory.Length, BytesNeeded) Then
+        If UnsafeNativeMethods.GetPrinterDriverDirectory(Servername, Environment, 1, DriverDirectory, DriverDirectory.Length, BytesNeeded) Then
             '\\ Empty string should not return any values...
             Return New DirectoryInfo(DriverDirectory)
         Else
             DriverDirectory = New String(Char.Parse(" "), BytesNeeded)
-            If SpoolerApi.GetPrinterDriverDirectory(Servername, Environment, 1, DriverDirectory, DriverDirectory.Length, BytesNeeded) Then
+            If UnsafeNativeMethods.GetPrinterDriverDirectory(Servername, Environment, 1, DriverDirectory, DriverDirectory.Length, BytesNeeded) Then
                 '\\ Empty string should not return any values...
                 Return New DirectoryInfo(DriverDirectory)
             Else
