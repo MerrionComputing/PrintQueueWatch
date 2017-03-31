@@ -1,5 +1,5 @@
 **Components**
-* [PrinterMonitorComponent](PrinterMonitorComponent) - Component that monitors one or more printers and raises events when events occur on them
+* [PrinterMonitorComponent.md](PrinterMonitorComponent) - Component that monitors one or more printers and raises events when events occur on them
 
 **Classes**
 * [DataType](DataType) - The data type of a print spool file (collection class [DataTypeCollection](DataTypeCollection) )
