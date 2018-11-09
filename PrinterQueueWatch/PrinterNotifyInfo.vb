@@ -16,7 +16,7 @@ Class PrinterNotifyInfoData
     Public wField As Int16
     Public dwReserved As Int32
     Public dwId As Int32
-    Public cbBuff As Int32
+    Public cbBuff As IntPtr
     Public pBuff As IntPtr
 
     Public Sub New(ByVal lpAddress As IntPtr)
@@ -45,7 +45,7 @@ Class PrinterNotifyInfoData
     End Function
 
     Public Function ToInt32() As Int32
-        Return cbBuff
+        Return cbBuff.ToInt32()
     End Function
 
 #Region "Tracing"
@@ -80,7 +80,7 @@ Class PrinterNotifyInfo
 
             Dim nInfoDataItem As Integer
             '\\ Offset the pointer by the size of this class
-            Dim lOffset As IntPtr = lpAddress + Marshal.SizeOf(msInfo)
+Dim lOffset As IntPtr = lpAddress + Marshal.SizeOf(msInfo) + IIF(IntPtr.Size == 8, 4, 0) 'Fix 64bit data allignment issue
 
             '\\ Process the .adata array
             For nInfoDataItem = 0 To msInfo.Count - 1
