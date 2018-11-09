@@ -80,7 +80,7 @@ Class PrinterNotifyInfo
 
             Dim nInfoDataItem As Integer
             '\\ Offset the pointer by the size of this class
-            Dim lOffset As IntPtr = lpAddress + Marshal.SizeOf(msInfo) + IIF(IntPtr.Size == 8, 4, 0) 'Fix 64bit data allignment issue
+            Dim lOffset As IntPtr = lpAddress + Marshal.SizeOf(msInfo) + IIf(IntPtr.Size = 8, 4, 0) 'Fix 64bit data allignment issue
 
             '\\ Process the .adata array
             For nInfoDataItem = 0 To msInfo.Count - 1
