@@ -26,8 +26,8 @@ Imports System.IO
 ''' 	[Duncan]	19/11/2005	Created
 ''' </history>
 ''' -----------------------------------------------------------------------------
-<ToolboxBitmap(GetType(PrinterQueueWatch.PrinterMonitorComponent), "toolboximage.bmp"), _
- System.Security.SuppressUnmanagedCodeSecurity()> _
+<ToolboxBitmap(GetType(PrinterQueueWatch.PrinterMonitorComponent), "toolboximage.bmp"),
+ System.Security.SuppressUnmanagedCodeSecurity()>
 Public Class PrinterMonitorComponent
     Inherits System.ComponentModel.Component
 
@@ -102,14 +102,14 @@ Public Class PrinterMonitorComponent
 #Region "Job events"
 
 #Region "Event Delegates"
-    <Serializable()> _
-    Public Delegate Sub PrintJobEventHandler( _
-                  ByVal sender As Object, _
+    <Serializable()>
+    Public Delegate Sub PrintJobEventHandler(
+                  ByVal sender As Object,
                   ByVal e As PrintJobEventArgs)
 
-    <Serializable()> _
-    Public Delegate Sub PrinterEventHandler( _
-                      ByVal sender As Object, _
+    <Serializable()>
+    Public Delegate Sub PrinterEventHandler(
+                      ByVal sender As Object,
                       ByVal e As PrinterEventArgs)
 #End Region
 
@@ -253,8 +253,8 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Browsable(False)> _
-    <DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden)> _
+    <Browsable(False)>
+    <DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden)>
     Public Property DeviceName() As String
         Set(ByVal Value As String)
 
@@ -310,7 +310,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Browsable(False)> _
+    <Browsable(False)>
     Public Overloads ReadOnly Property PrintJobs() As PrintJobCollection
         Get
             If _MonitoredPrinters.Count > 0 Then
@@ -333,7 +333,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Browsable(False)> _
+    <Browsable(False)>
     Public Overloads ReadOnly Property PrintJobs(ByVal DeviceName As String) As PrintJobCollection
         Get
             If _MonitoredPrinters.Contains(DeviceName) Then
@@ -359,7 +359,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Browsable(False)> _
+    <Browsable(False)>
     Public Overloads ReadOnly Property PrinterInformation() As PrinterInformation
         Get
             If _MonitoredPrinters.Count > 0 Then
@@ -382,8 +382,8 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Browsable(False)> _
-        Public Overloads ReadOnly Property PrinterInformation(ByVal DeviceName As String) As PrinterInformation
+    <Browsable(False)>
+    Public Overloads ReadOnly Property PrinterInformation(ByVal DeviceName As String) As PrinterInformation
         Get
             If _MonitoredPrinters.Count > 0 Then
                 Return _MonitoredPrinters(DeviceName)
@@ -396,7 +396,7 @@ Public Class PrinterMonitorComponent
 
 #Region "Printer info properties"
 
-    <Description("The number of jobs on the queued on the printer being monitored")> _
+    <Description("The number of jobs on the queued on the printer being monitored")>
     Public ReadOnly Property JobCount() As Int32
         Get
             If mhPrinter.ToInt64 <> 0 Then
@@ -427,7 +427,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Description("Adds the printer to the internal list and starts monitoring it")> _
+    <Description("Adds the printer to the internal list and starts monitoring it")>
     Public Sub AddPrinter(ByVal DeviceName As String)
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("AddPrinter(" & DeviceName & ")", Me.GetType.ToString)
@@ -469,7 +469,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Description("Removes a printer from the internal list, stopping monitoring as appropriate ")> _
+    <Description("Removes a printer from the internal list, stopping monitoring as appropriate ")>
     Public Sub RemovePrinter(ByVal DeviceName As String)
         If PrinterMonitorComponent.ComponentTraceSwitch.TraceVerbose Then
             Trace.WriteLine("RemovePrinter(" & DeviceName & ")", Me.GetType.ToString)
@@ -491,7 +491,7 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Description("Disconnects from all printers being monitored")> _
+    <Description("Disconnects from all printers being monitored")>
     Public Sub Disconnect()
         If Not _MonitoredPrinters Is Nothing Then
             Dim nCount As Integer = _MonitoredPrinters.Count
@@ -635,7 +635,7 @@ Public Class PrinterMonitorComponent
     'NOTE: The following procedure is required by the Component Designer
     'It can be modified using the Component Designer.
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
 
     End Sub
@@ -659,9 +659,9 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to make the component monitor jobs being added to the job queue"), _
-    DefaultValue(GetType(Boolean), "True")> _
+    <Category("Performance Tuning"),
+    Description("Set to make the component monitor jobs being added to the job queue"),
+    DefaultValue(GetType(Boolean), "True")>
     Public Property MonitorJobAddedEvent() As Boolean
         Get
             Return ((_WatchFlags And PrinterChangeNotificationJobFlags.PRINTER_CHANGE_ADD_JOB) <> 0)
@@ -693,9 +693,9 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to make the component monitor jobs being removed from the job queue"), _
-      DefaultValue(GetType(Boolean), "True")> _
+    <Category("Performance Tuning"),
+    Description("Set to make the component monitor jobs being removed from the job queue"),
+      DefaultValue(GetType(Boolean), "True")>
     Public Property MonitorJobDeletedEvent() As Boolean
         Get
             Return ((_WatchFlags And PrinterChangeNotificationJobFlags.PRINTER_CHANGE_DELETE_JOB) <> 0)
@@ -725,9 +725,9 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to make the component monitor jobs being written on the job queue"), _
-      DefaultValue(GetType(Boolean), "True")> _
+    <Category("Performance Tuning"),
+    Description("Set to make the component monitor jobs being written on the job queue"),
+      DefaultValue(GetType(Boolean), "True")>
     Public Property MonitorJobWrittenEvent() As Boolean
         Get
             Return ((_WatchFlags And PrinterChangeNotificationJobFlags.PRINTER_CHANGE_WRITE_JOB) <> 0)
@@ -757,10 +757,10 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to make the component monitor changes to the jobs on the job queue"), _
-      DefaultValue(GetType(Boolean), "True")> _
-     Public Property MonitorJobSetEvent() As Boolean
+    <Category("Performance Tuning"),
+    Description("Set to make the component monitor changes to the jobs on the job queue"),
+      DefaultValue(GetType(Boolean), "True")>
+    Public Property MonitorJobSetEvent() As Boolean
         Get
             Return ((_WatchFlags And PrinterChangeNotificationJobFlags.PRINTER_CHANGE_SET_JOB) <> 0)
         End Get
@@ -789,9 +789,9 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to make the component monitor printer setup change events"), _
-    DefaultValue(GetType(Boolean), "True")> _
+    <Category("Performance Tuning"),
+    Description("Set to make the component monitor printer setup change events"),
+    DefaultValue(GetType(Boolean), "True")>
     Public Property MonitorPrinterChangeEvent() As Boolean
         Get
             Return ((_WatchFlags And PrinterChangeNotificationGeneralFlags.PRINTER_CHANGE_PRINTER) <> 0)
@@ -820,9 +820,9 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to fine tune the job information required for networks"), _
-    DefaultValue(MonitorJobEventInformationLevels.MaximumJobInformation)> _
+    <Category("Performance Tuning"),
+    Description("Set to fine tune the job information required for networks"),
+    DefaultValue(MonitorJobEventInformationLevels.MaximumJobInformation)>
     Public Property MonitorJobEventInformationLevel() As MonitorJobEventInformationLevels
         Get
             Return _MonitorJobInfoLevel
@@ -849,10 +849,10 @@ Public Class PrinterMonitorComponent
     ''' 	[Duncan]	19/11/2005	Created
     ''' </history>
     ''' -----------------------------------------------------------------------------
-    <Category("Performance Tuning"), _
-    Description("Set to tune the printer watch refresh interval"), _
-    DefaultValue(DEFAULT_THREAD_TIMEOUT), _
-    Obsolete("This property no longer affects the operation of the component")> _
+    <Category("Performance Tuning"),
+    Description("Set to tune the printer watch refresh interval"),
+    DefaultValue(DEFAULT_THREAD_TIMEOUT),
+    Obsolete("This property no longer affects the operation of the component")>
     Public Property ThreadTimeout() As Integer
         Get
             If _ThreadTimeout = 0 Or _ThreadTimeout < -1 Then
@@ -1317,7 +1317,7 @@ Friend Class MonitoredPrinters
 #End Region
 
 #Region "Public constructor"
-    Public Sub New(ByVal PrinterEventCallback As PrinterMonitorComponent.PrinterEvent, _
+    Public Sub New(ByVal PrinterEventCallback As PrinterMonitorComponent.PrinterEvent,
                ByVal JobEventCallback As PrinterMonitorComponent.JobEvent)
         _PrinterEvent = PrinterEventCallback
         _JobEvent = JobEventCallback

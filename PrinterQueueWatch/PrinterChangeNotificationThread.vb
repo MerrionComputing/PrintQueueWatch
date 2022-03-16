@@ -8,7 +8,6 @@
 '\\ ----------------------------------------------------------------
 Imports System.ComponentModel
 Imports System.Threading
-Imports PrinterQueueWatch.SpoolerApi
 Imports PrinterQueueWatch.SpoolerApiConstantEnumerations
 
 Friend Class PrinterChangeNotificationThread
