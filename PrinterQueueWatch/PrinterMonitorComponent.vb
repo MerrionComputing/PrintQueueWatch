@@ -1249,7 +1249,7 @@ Friend Class MonitoredPrinters
             _PrinterList.Add(DeviceName, PrinterInformation)
             With Item(DeviceName)
                 '\\ Make the PrinterInformation class know that this component is it's event target
-                Call .InitialiseEventQueue(_JobEvent, _PrinterEvent)
+                Call .SetEvents(_JobEvent, _PrinterEvent)
                 '\\ Make the printerinformation class start monitoring
                 .Monitored = True
             End With
