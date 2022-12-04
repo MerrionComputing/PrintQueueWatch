@@ -3,7 +3,6 @@
 '\\     http://www.merrioncomputing.com
 '\\ --------------------------------------------------------
 Imports PrinterQueueWatch.SpoolerStructs
-Imports PrinterQueueWatch.SpoolerApi
 Imports System.Runtime.InteropServices
 Imports System.ComponentModel
 

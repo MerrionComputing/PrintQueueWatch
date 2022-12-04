@@ -254,8 +254,9 @@ Friend Class EventQueue
             _WaitHandle.Set()
         End If
         If Not _EventQueueWorker Is Nothing Then
-            _EventQueueWorker.Join()
-            _EventQueueWorker = Nothing
+            If _EventQueueWorker.IsAlive Then
+                _EventQueueWorker.Join()
+            End If
         End If
         _WaitHandle = Nothing
         _EventQueueWorker = Nothing

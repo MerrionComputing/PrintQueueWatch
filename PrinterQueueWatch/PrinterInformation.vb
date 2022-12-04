@@ -1454,6 +1454,9 @@ Public Class PrinterInformation
                         End If
                         _NotificationThread.StopWatching()
                     End If
+                    If Not _EventQueue Is Nothing Then
+                        _EventQueue.Shutdown()
+                    End If
                 End If
                 _Monitored = Value
             End If
@@ -1490,13 +1493,10 @@ Public Class PrinterInformation
     End Property
 #End Region
 
-#Region "InitialiseEventQueue"
-    Friend Sub InitialiseEventQueue(ByVal JobEventCallback As PrinterMonitorComponent.JobEvent, ByVal PrinterEventCallback As PrinterMonitorComponent.PrinterEvent)
-
+#Region "SetEvents"
+    Friend Sub SetEvents(ByVal JobEventCallback As PrinterMonitorComponent.JobEvent, ByVal PrinterEventCallback As PrinterMonitorComponent.PrinterEvent)
         _JobEvent = JobEventCallback
         _PrinterEvent = PrinterEventCallback
-        _EventQueue = New EventQueue(_JobEvent, _PrinterEvent)
-
     End Sub
 #End Region
 
@@ -1988,19 +1988,6 @@ Public Class PrinterInformation
         _ThreadTimeout = ThreadTimeout
         _MonitorLevel = MonitorLevel
         _WatchFlags = WatchFlags
-    End Sub
-
-    Friend Sub New(ByVal DeviceName As String, ByVal DesiredAccess As SpoolerApiConstantEnumerations.PrinterAccessRights, ByVal ThreadTimeout As Integer, ByVal MonitorLevel As PrinterMonitorComponent.MonitorJobEventInformationLevels, _
-                   ByVal WatchFlags As Integer, ByVal JobEventCallback As PrinterMonitorComponent.JobEvent, ByVal PrinterEventCallback As PrinterMonitorComponent.PrinterEvent)
-
-        Me.New(DeviceName, DesiredAccess, ThreadTimeout, MonitorLevel, WatchFlags)
-        _JobEvent = JobEventCallback
-        _PrinterEvent = PrinterEventCallback
-        If _NotificationThread Is Nothing Then
-            _NotificationThread = New PrinterChangeNotificationThread(mhPrinter, _ThreadTimeout, _MonitorLevel, _WatchFlags, Me)
-        End If
-        _EventQueue = New EventQueue(_JobEvent, _PrinterEvent)
-
     End Sub
 
     Friend Sub New(ByVal DeviceName As String, _
